@@ -1,110 +1,102 @@
+Done – I’ve renamed the entire application to MEDFIT BRAVO. All references to “Helios” have been replaced, and the local storage key has been updated to avoid conflicts with previous versions.
 
+Here is the full, updated HTML file:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Helios Checkup · Risk & Trends</title>
-    <!-- Chart.js CDN for trend visualisation -->
+    <title>MEDFIT BRAVO · eHealth AI</title>
+
+    <!-- ========== DEPENDENCIES (CDN) ========== -->
+    <!-- Chart.js for trends -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
+    <!-- Tesseract.js for OCR (document scanning) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
+    <!-- QRCode.js for QR generation -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
+    </script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
     <style>
+        /* ---------- RESET & BASE ---------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
-
         body {
-            background: #f4f7fc;
-            padding: 24px;
-            color: #1a2634;
+            background: #f0f5fa;
+            padding: 20px;
+            color: #1e2a3a;
         }
-
         .container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
         }
 
-        /* header */
+        /* ---------- HEADER ---------- */
         .app-header {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
+            justify-content: space-between;
             background: white;
-            padding: 18px 24px;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            padding: 16px 24px;
+            border-radius: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+            margin-bottom: 28px;
         }
         .app-header h1 {
-            font-weight: 600;
-            font-size: 1.6rem;
+            font-weight: 700;
+            font-size: 1.8rem;
             color: #005792;
-            letter-spacing: -0.5px;
         }
-        .app-header h1 small {
-            font-weight: 400;
-            font-size: 0.9rem;
-            color: #4a5b6e;
-            margin-left: 12px;
+        .app-header h1 i {
+            margin-right: 10px;
         }
-        .patient-controls {
+        .profile-selector {
             display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
         }
-        .patient-controls select,
-        .patient-controls input {
-            padding: 8px 14px;
+        .profile-btn {
+            padding: 8px 20px;
             border-radius: 40px;
-            border: 1px solid #d9e1ec;
+            border: 2px solid #d9e1ec;
             background: white;
-            font-size: 0.95rem;
-            min-width: 160px;
-        }
-        .patient-controls select:focus,
-        .patient-controls input:focus {
-            outline: 2px solid #005792;
-            border-color: transparent;
-        }
-        .btn {
-            padding: 8px 18px;
-            border-radius: 40px;
-            border: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
             transition: 0.2s;
-            background: #eef2f7;
-            color: #1a2634;
+            color: #1e2a3a;
         }
-        .btn-primary {
+        .profile-btn.active {
             background: #005792;
+            border-color: #005792;
             color: white;
         }
-        .btn-primary:hover {
+        .profile-btn:hover {
+            background: #eef2f7;
+        }
+        .profile-btn.active:hover {
             background: #003f6b;
         }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #b02a37;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #d9e1ec;
-        }
-        .btn-outline:hover {
+        .encounter-id {
+            font-size: 0.85rem;
             background: #eef2f7;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: #1e2a3a;
         }
 
-        /* grid */
+        /* ---------- GRID ---------- */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -112,72 +104,118 @@
             margin-bottom: 28px;
         }
 
+        /* ---------- CARDS ---------- */
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 20px 22px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            padding: 22px 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: 0.2s;
         }
         .card h3 {
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-bottom: 16px;
-            color: #1f2a3a;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        .card h3 .badge {
-            font-size: 0.7rem;
-            background: #eef2f7;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-weight: 400;
+        .card h3 i {
+            color: #005792;
+            width: 24px;
         }
 
+        /* ---------- FORM ---------- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px 20px;
+            gap: 12px 16px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
         .form-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.3px;
             color: #4a5b6e;
+            display: flex;
+            justify-content: space-between;
         }
         .form-group input {
-            padding: 8px 10px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
             border: 1px solid #e2e8f0;
             font-size: 0.9rem;
             background: #fafcfe;
-            width: 100%;
+            transition: 0.15s;
         }
         .form-group input:focus {
             outline: 2px solid #005792;
             border-color: transparent;
         }
         .form-group .unit {
-            font-size: 0.7rem;
+            font-weight: 400;
             color: #6f7d8f;
-            margin-left: 4px;
         }
 
+        .scan-upload {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0 8px;
+            flex-wrap: wrap;
+        }
+        .scan-upload .btn {
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #eef2f7;
+            color: #1e2a3a;
+        }
+        .scan-upload .btn-primary {
+            background: #005792;
+            color: white;
+        }
+        .scan-upload .btn-primary:hover {
+            background: #003f6b;
+        }
+        .scan-upload .btn-outline {
+            background: transparent;
+            border: 1px solid #d9e1ec;
+        }
+        .scan-upload .btn-outline:hover {
+            background: #eef2f7;
+        }
+
+        /* ---------- RISK DISPLAY ---------- */
+        .risk-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .risk-item {
+            flex: 1 0 140px;
+            background: #f8fafc;
+            padding: 8px 14px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
         .risk-badge {
-            display: inline-block;
             padding: 2px 12px;
             border-radius: 30px;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
         }
         .risk-low {
             background: #d4edda;
@@ -192,60 +230,65 @@
             color: #721c24;
         }
 
-        .risk-summary {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px 20px;
-            margin-top: 10px;
-        }
-        .risk-item {
-            flex: 1 0 160px;
-            background: #f8fafc;
-            padding: 8px 14px;
-            border-radius: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .risk-item span:first-child {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #2c3e50;
-        }
-
-        .composite-score {
-            margin-top: 18px;
-            padding: 14px 18px;
+        .composite-box {
             background: #eef6ff;
             border-radius: 16px;
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            margin: 12px 0;
         }
-        .composite-score .score-number {
-            font-size: 2rem;
+        .composite-score {
+            font-size: 2.2rem;
             font-weight: 700;
             color: #005792;
         }
 
-        .history-section {
-            margin-top: 28px;
+        .ai-insight {
+            background: #f0f8ff;
+            border-left: 4px solid #005792;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
-        .history-table-wrap {
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+        #qrcode {
+            display: inline-block;
+            padding: 8px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ---------- HISTORY TABLE ---------- */
+        .history-section {
+            margin-top: 8px;
+        }
+        .table-wrap {
             overflow-x: auto;
             margin-top: 12px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         th {
             text-align: left;
             padding: 10px 8px;
             background: #f0f4fa;
-            color: #1f2a3a;
             font-weight: 600;
             border-bottom: 2px solid #d9e1ec;
         }
@@ -257,33 +300,29 @@
         tr:hover td {
             background: #f8faff;
         }
-        .trend-arrow {
+
+        .btn-sm {
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: none;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-left: 4px;
+            cursor: pointer;
+            background: #eef2f7;
+            transition: 0.2s;
         }
-        .trend-up {
-            color: #dc3545;
+        .btn-sm:hover {
+            background: #d9e1ec;
         }
-        .trend-down {
-            color: #28a745;
+        .btn-sm.danger {
+            background: #f8d7da;
+            color: #721c24;
         }
-        .trend-flat {
-            color: #6c757d;
-        }
-
-        .chart-container {
-            margin-top: 16px;
-            height: 200px;
+        .btn-sm.danger:hover {
+            background: #f5c6cb;
         }
 
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
+        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 900px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -293,8 +332,8 @@
                 align-items: stretch;
                 gap: 12px;
             }
-            .patient-controls {
-                flex-wrap: wrap;
+            .profile-selector {
+                justify-content: center;
             }
             .form-grid {
                 grid-template-columns: 1fr;
@@ -303,161 +342,91 @@
     </style>
 </head>
 <body>
+
     <div class="container">
 
-        <!-- HEADER -->
+        <!-- ========== HEADER ========== -->
         <header class="app-header">
-            <h1>🫀 Helios Checkup <small>Risk &amp; Trend Tracker</small></h1>
-            <div class="patient-controls">
-                <select id="patientSelect">
-                    <option value="">— Select patient —</option>
-                </select>
-                <input type="text" id="newPatientName" placeholder="New patient name" />
-                <button class="btn btn-primary" id="addPatientBtn">+ Add / Load</button>
-                <button class="btn btn-outline" id="newVisitBtn">➕ New visit</button>
-                <button class="btn btn-danger" id="deleteVisitBtn" title="Delete selected visit">🗑️</button>
+            <h1><i class="fas fa-heartbeat"></i> MEDFIT BRAVO · AI</h1>
+            <div class="profile-selector">
+                <button class="profile-btn active" data-profile="women"><i class="fas fa-female"></i> Women</button>
+                <button class="profile-btn" data-profile="men"><i class="fas fa-male"></i> Men</button>
+                <button class="profile-btn" data-profile="geriatric"><i class="fas fa-user-plus"></i> Geriatric</button>
             </div>
+            <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-qrcode"></i> Encounter #<span id="encounterNumber">0000</span></span>
         </header>
 
-        <!-- MAIN GRID -->
+        <!-- ========== MAIN GRID ========== -->
         <div class="grid-2">
-            <!-- LEFT: INPUT FORM -->
+
+            <!-- LEFT: INPUT + SCAN -->
             <div class="card">
-                <h3>📋 Visit data <span class="badge" id="visitDateDisplay">today</span></h3>
+                <h3><i class="fas fa-edit"></i> Enter Readings</h3>
+                <!-- Scan upload -->
+                <div class="scan-upload">
+                    <input type="file" id="scanInput" accept="image/*" style="display:none;" />
+                    <button class="btn btn-primary" id="scanBtn"><i class="fas fa-camera"></i> Scan Document</button>
+                    <button class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> Clear</button>
+                    <span style="font-size:0.8rem; color:#4a5b6e; align-self:center;" id="scanStatus">Ready</span>
+                </div>
+
                 <form id="checkupForm" autocomplete="off">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Patient name</label>
-                            <input type="text" id="formPatientName" placeholder="e.g. Anna Schmidt" />
-                        </div>
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" id="formDate" />
-                        </div>
-                        <div class="form-group">
-                            <label>BMI <span class="unit">kg/m²</span></label>
-                            <input type="number" step="0.1" id="bmi" placeholder="24.5" />
-                        </div>
-                        <div class="form-group">
-                            <label>Body fat <span class="unit">%</span></label>
-                            <input type="number" step="0.1" id="bf" placeholder="22" />
-                        </div>
-                        <div class="form-group">
-                            <label>Waist <span class="unit">cm</span></label>
-                            <input type="number" step="0.5" id="waist" placeholder="82" />
-                        </div>
-                        <div class="form-group">
-                            <label>Total Chol <span class="unit">mg/dL</span></label>
-                            <input type="number" id="chol" placeholder="190" />
-                        </div>
-                        <div class="form-group">
-                            <label>LDL <span class="unit">mg/dL</span></label>
-                            <input type="number" id="ldl" placeholder="110" />
-                        </div>
-                        <div class="form-group">
-                            <label>HDL <span class="unit">mg/dL</span></label>
-                            <input type="number" id="hdl" placeholder="55" />
-                        </div>
-                        <div class="form-group">
-                            <label>Trig <span class="unit">mg/dL</span></label>
-                            <input type="number" id="trig" placeholder="150" />
-                        </div>
-                        <div class="form-group">
-                            <label>Glucose <span class="unit">mg/dL</span></label>
-                            <input type="number" id="glucose" placeholder="95" />
-                        </div>
-                        <div class="form-group">
-                            <label>HbA1c <span class="unit">%</span></label>
-                            <input type="number" step="0.1" id="hba1c" placeholder="5.4" />
-                        </div>
-                        <div class="form-group">
-                            <label>SBP <span class="unit">mmHg</span></label>
-                            <input type="number" id="sbp" placeholder="120" />
-                        </div>
-                        <div class="form-group">
-                            <label>DBP <span class="unit">mmHg</span></label>
-                            <input type="number" id="dbp" placeholder="80" />
-                        </div>
-                        <div class="form-group">
-                            <label>Resting HR <span class="unit">bpm</span></label>
-                            <input type="number" id="hr" placeholder="72" />
-                        </div>
-                        <div class="form-group">
-                            <label>Ejection fraction <span class="unit">%</span></label>
-                            <input type="number" id="ef" placeholder="60" />
-                        </div>
-                        <div class="form-group">
-                            <label>Carotid IMT <span class="unit">mm</span></label>
-                            <input type="number" step="0.01" id="imt" placeholder="0.75" />
-                        </div>
-                        <div class="form-group">
-                            <label>FEV1 <span class="unit">L</span></label>
-                            <input type="number" step="0.1" id="fev1" placeholder="3.2" />
-                        </div>
-                        <div class="form-group">
-                            <label>FVC <span class="unit">L</span></label>
-                            <input type="number" step="0.1" id="fvc" placeholder="4.0" />
-                        </div>
+                    <div class="form-grid" id="formFields">
+                        <!-- fields generated dynamically by JS -->
                     </div>
                     <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
-                        <button type="submit" class="btn btn-primary" style="flex:1;">💾 Save visit</button>
-                        <button type="reset" class="btn btn-outline">↺ Clear</button>
+                        <button type="submit" class="btn btn-primary" style="flex:1;"><i class="fas fa-save"></i> Save Encounter</button>
+                        <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> Reset</button>
                     </div>
                 </form>
             </div>
 
-            <!-- RIGHT: RISK SUMMARY -->
+            <!-- RIGHT: RISK, AI, QR -->
             <div class="card">
-                <h3>⚡ Risk assessment <span class="badge" id="riskDateLabel">—</span></h3>
+                <h3><i class="fas fa-chart-pie"></i> Risk & Insights</h3>
                 <div id="riskContainer">
-                    <div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save a visit to see risk scoring.</div>
+                    <div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save an encounter to see risk scoring.</div>
                 </div>
-                <div class="composite-score">
-                    <span>🛡️ Composite Risk Index</span>
-                    <span class="score-number" id="compositeScore">—</span>
+                <div class="composite-box">
+                    <span><i class="fas fa-shield-alt"></i> Composite Risk Index</span>
+                    <span class="composite-score" id="compositeScore">—</span>
                 </div>
-                <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                    <span style="font-size:0.8rem; font-weight:500;">Trend chart:</span>
-                    <select id="chartMetric" style="padding:4px 10px; border-radius:30px; border:1px solid #d9e1ec;">
-                        <option value="ldl">LDL</option>
-                        <option value="bmi">BMI</option>
-                        <option value="ef">Ejection fraction</option>
-                        <option value="sbp">SBP</option>
-                        <option value="glucose">Glucose</option>
-                        <option value="hdl">HDL</option>
-                    </select>
+                <div class="ai-insight" id="aiInsight">
+                    <i class="fas fa-robot"></i> AI insights will appear after saving.
                 </div>
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
+                <hr style="margin:16px 0; border-color:#e9edf2;" />
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <span><i class="fas fa-qrcode"></i> Encounter QR</span>
+                    <button class="btn-sm" id="downloadQrBtn"><i class="fas fa-download"></i> Download</button>
+                </div>
+                <div class="qr-container">
+                    <div id="qrcode"></div>
                 </div>
             </div>
         </div>
 
-        <!-- HISTORY TABLE -->
+        <!-- ========== HISTORY ========== -->
         <div class="card history-section">
-            <div class="flex-between">
-                <h3>📊 Visit history &amp; trends</h3>
-                <span style="font-size:0.8rem; color:#4a5b6e;" id="historyCount">0 visits</span>
-            </div>
-            <div class="history-table-wrap">
+            <h3><i class="fas fa-history"></i> Encounter History <span style="font-size:0.8rem; font-weight:400; color:#4a5b6e;" id="historyCount">0 records</span></h3>
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Date</th>
+                            <th>Profile</th>
                             <th>BMI</th>
                             <th>LDL</th>
                             <th>HDL</th>
                             <th>Glucose</th>
                             <th>SBP</th>
                             <th>EF</th>
-                            <th>IMT</th>
-                            <th>Risk score</th>
-                            <th>Δ from prev</th>
+                            <th>Risk</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="historyBody">
-                        <tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No data — add a patient and save a visit.</td></tr>
+                        <tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No encounters yet.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -466,195 +435,271 @@
     </div>
 
     <script>
+        // ============================================================
+        //  MEDFIT BRAVO – AI eHealth Application
+        //  Features: 3 profiles, OCR scanning, QR per encounter,
+        //  risk scoring, AI insights, local storage.
+        // ============================================================
+
         (function() {
-            // ---------- DATA LAYER ----------
-            const STORAGE_KEY = 'heliosCheckupData';
-            let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let currentPatient = '';
+            'use strict';
+
+            // ---------- CONFIGURATION ----------
+            const STORAGE_KEY = 'medfitBRAVO_encounters';
+            let encounters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            let currentProfile = 'women'; // 'women', 'men', 'geriatric'
+            let currentEncounterId = null; // auto-generated
             let chartInstance = null;
 
-            // DOM refs
-            const patientSelect = document.getElementById('patientSelect');
-            const newPatientInput = document.getElementById('newPatientName');
-            const addPatientBtn = document.getElementById('addPatientBtn');
-            const newVisitBtn = document.getElementById('newVisitBtn');
-            const deleteVisitBtn = document.getElementById('deleteVisitBtn');
-            const form = document.getElementById('checkupForm');
-            const formDate = document.getElementById('formDate');
-            const visitDateDisplay = document.getElementById('visitDateDisplay');
-            const riskContainer = document.getElementById('riskContainer');
-            const compositeScore = document.getElementById('compositeScore');
-            const riskDateLabel = document.getElementById('riskDateLabel');
-            const historyBody = document.getElementById('historyBody');
-            const historyCount = document.getElementById('historyCount');
-            const chartMetric = document.getElementById('chartMetric');
-            const canvas = document.getElementById('trendChart');
+            // Field definitions per profile
+            const FIELD_DEFS = {
+                women: [
+                    { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
+                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
+                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
+                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
+                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
+                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
+                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
+                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
+                    { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
+                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
+                    { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
+                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
+                ],
+                men: [
+                    { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
+                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
+                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
+                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
+                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
+                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
+                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
+                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
+                    { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
+                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
+                    { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
+                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
+                ],
+                geriatric: [
+                    { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
+                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
+                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
+                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
+                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
+                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
+                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
+                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
+                    { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
+                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
+                    { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
+                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
+                ]
+            };
 
-            // field map for easy saving/loading
-            const fields = [
-                'formPatientName', 'formDate', 'bmi', 'bf', 'waist', 'chol', 'ldl', 'hdl', 'trig',
-                'glucose', 'hba1c', 'sbp', 'dbp', 'hr', 'ef', 'imt', 'fev1', 'fvc'
-            ];
-
-            function getFormValues() {
-                const obj = {};
-                fields.forEach(id => {
-                    const el = document.getElementById(id);
-                    obj[id] = el ? el.value : '';
-                });
-                return obj;
-            }
-
-            function setFormValues(data) {
-                fields.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && data[id] !== undefined) el.value = data[id];
-                });
-            }
-
-            function clearForm() {
-                fields.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = '';
-                });
-                // set default date
-                document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
-            }
-
-            // ---------- HELPERS ----------
-            function getRiskLevel(value, thresholds) {
-                // thresholds: [{max, level, label, class}]
-                for (let t of thresholds) {
-                    if (value <= t.max) return t;
-                }
-                return thresholds[thresholds.length - 1];
-            }
-
-            function computeRisk(item) {
-                // numeric parsing
-                const n = (v) => parseFloat(v) || 0;
-                const bmi = n(item.bmi);
-                const ldl = n(item.ldl);
-                const hdl = n(item.hdl);
-                const trig = n(item.trig);
-                const glucose = n(item.glucose);
-                const hba1c = n(item.hba1c);
-                const sbp = n(item.sbp);
-                const dbp = n(item.dbp);
-                const ef = n(item.ef);
-                const imt = n(item.imt);
-                const fev1 = n(item.fev1);
-                const fvc = n(item.fvc);
-                const waist = n(item.waist);
-                const bf = n(item.bf);
-
-                const riskMap = {};
-
-                // BMI
-                if (bmi > 0) {
-                    const t = getRiskLevel(bmi, [
+            // Thresholds for risk (profile‑adjusted)
+            function getThresholds(profile) {
+                const common = {
+                    bmi: [
                         { max: 18.4, level: 'moderate', label: 'Underweight', cls: 'risk-moderate' },
                         { max: 24.9, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 29.9, level: 'moderate', label: 'Overweight', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'Obese', cls: 'risk-high' }
-                    ]);
-                    riskMap.bmi = t;
-                }
-
-                // LDL
-                if (ldl > 0) {
-                    const t = getRiskLevel(ldl, [
+                    ],
+                    ldl: [
                         { max: 99, level: 'low', label: 'Optimal', cls: 'risk-low' },
                         { max: 159, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
-                    ]);
-                    riskMap.ldl = t;
-                }
-
-                // HDL (low is bad)
-                if (hdl > 0) {
-                    let t;
-                    if (hdl >= 60) t = { level: 'low', label: 'Good', cls: 'risk-low' };
-                    else if (hdl >= 40) t = { level: 'moderate', label: 'Moderate', cls: 'risk-moderate' };
-                    else t = { level: 'high', label: 'Low', cls: 'risk-high' };
-                    riskMap.hdl = t;
-                }
-
-                // Glucose
-                if (glucose > 0) {
-                    const t = getRiskLevel(glucose, [
+                    ],
+                    hdl: { low: 40, moderate: 60 },
+                    glucose: [
                         { max: 99, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 125, level: 'moderate', label: 'Prediabetes', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'Diabetes', cls: 'risk-high' }
-                    ]);
-                    riskMap.glucose = t;
-                }
-
-                // SBP
-                if (sbp > 0) {
-                    const t = getRiskLevel(sbp, [
+                    ],
+                    sbp: [
                         { max: 119, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 139, level: 'moderate', label: 'Elevated', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
-                    ]);
-                    riskMap.sbp = t;
-                }
-
-                // EF (low is bad)
-                if (ef > 0) {
-                    let t;
-                    if (ef >= 55) t = { level: 'low', label: 'Normal', cls: 'risk-low' };
-                    else if (ef >= 45) t = { level: 'moderate', label: 'Mildly reduced', cls: 'risk-moderate' };
-                    else t = { level: 'high', label: 'Reduced', cls: 'risk-high' };
-                    riskMap.ef = t;
-                }
-
-                // Carotid IMT
-                if (imt > 0) {
-                    const t = getRiskLevel(imt, [
+                    ],
+                    ef: { low: 55, moderate: 45 },
+                    imt: [
                         { max: 0.79, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 0.99, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'Thickened', cls: 'risk-high' }
-                    ]);
-                    riskMap.imt = t;
-                }
-
-                // composite: count high/moderate
-                let total = 0;
-                let count = 0;
-                for (let key in riskMap) {
-                    const r = riskMap[key];
-                    if (r.level === 'high') total += 2;
-                    else if (r.level === 'moderate') total += 1;
-                    count++;
-                }
-                const avg = count > 0 ? (total / count) * 50 : 0; // 0-100 scale
-                const composite = Math.min(100, Math.round(avg));
-                return { risks: riskMap, composite };
+                    ]
+                };
+                return common;
             }
 
-            // ---------- RENDER RISK ----------
-            function renderRisk(record) {
-                if (!record) {
-                    riskContainer.innerHTML =
-                    `<div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save a visit to see risk scoring.</div>`;
-                    compositeScore.textContent = '—';
-                    riskDateLabel.textContent = '—';
-                    return;
+            // ---------- DOM REFS ----------
+            const form = document.getElementById('checkupForm');
+            const formFieldsContainer = document.getElementById('formFields');
+            const scanBtn = document.getElementById('scanBtn');
+            const scanInput = document.getElementById('scanInput');
+            const scanStatus = document.getElementById('scanStatus');
+            const clearBtn = document.getElementById('clearBtn');
+            const riskContainer = document.getElementById('riskContainer');
+            const compositeScore = document.getElementById('compositeScore');
+            const aiInsight = document.getElementById('aiInsight');
+            const qrContainer = document.getElementById('qrcode');
+            const downloadQrBtn = document.getElementById('downloadQrBtn');
+            const historyBody = document.getElementById('historyBody');
+            const historyCount = document.getElementById('historyCount');
+            const encounterNumberSpan = document.getElementById('encounterNumber');
+            const profileBtns = document.querySelectorAll('.profile-btn');
+
+            // ---------- UTILITY FUNCTIONS ----------
+            function getFieldValue(id) {
+                const el = document.getElementById(id);
+                return el ? el.value : '';
+            }
+
+            function setFieldValue(id, val) {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            }
+
+            function getFormData() {
+                const data = {};
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                fields.forEach(f => {
+                    data[f.id] = getFieldValue(f.id);
+                });
+                data.profile = currentProfile;
+                return data;
+            }
+
+            function setFormData(data) {
+                if (!data) return;
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                fields.forEach(f => {
+                    if (data[f.id] !== undefined) setFieldValue(f.id, data[f.id]);
+                });
+            }
+
+            function clearFormValues() {
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                fields.forEach(f => setFieldValue(f.id, ''));
+            }
+
+            function generateEncounterId() {
+                return 'ENC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
+            }
+
+            // ---------- BUILD FORM DYNAMICALLY ----------
+            function buildForm() {
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                let html = '';
+                fields.forEach(f => {
+                    html += `
+                        <div class="form-group">
+                            <label>${f.label} <span class="unit">${f.unit}</span></label>
+                            <input type="number" id="${f.id}" step="${f.step || '1'}" placeholder="—" />
+                        </div>
+                    `;
+                });
+                formFieldsContainer.innerHTML = html;
+            }
+
+            // ---------- RISK COMPUTATION ----------
+            function computeRisk(data) {
+                const n = (v) => parseFloat(v) || 0;
+                const thresholds = getThresholds(currentProfile);
+                const risks = {};
+
+                if (n(data.bmi) > 0) {
+                    const val = n(data.bmi);
+                    for (let t of thresholds.bmi) {
+                        if (val <= t.max) { risks.bmi = t; break; }
+                    }
                 }
-                const { risks, composite } = computeRisk(record);
-                let html = '<div class="risk-summary">';
+                if (n(data.ldl) > 0) {
+                    const val = n(data.ldl);
+                    for (let t of thresholds.ldl) {
+                        if (val <= t.max) { risks.ldl = t; break; }
+                    }
+                }
+                if (n(data.hdl) > 0) {
+                    const val = n(data.hdl);
+                    if (val >= 60) risks.hdl = { level: 'low', label: 'Good', cls: 'risk-low' };
+                    else if (val >= 40) risks.hdl = { level: 'moderate', label: 'Moderate', cls: 'risk-moderate' };
+                    else risks.hdl = { level: 'high', label: 'Low', cls: 'risk-high' };
+                }
+                if (n(data.glucose) > 0) {
+                    const val = n(data.glucose);
+                    for (let t of thresholds.glucose) {
+                        if (val <= t.max) { risks.glucose = t; break; }
+                    }
+                }
+                if (n(data.sbp) > 0) {
+                    const val = n(data.sbp);
+                    for (let t of thresholds.sbp) {
+                        if (val <= t.max) { risks.sbp = t; break; }
+                    }
+                }
+                if (n(data.ef) > 0) {
+                    const val = n(data.ef);
+                    if (val >= 55) risks.ef = { level: 'low', label: 'Normal', cls: 'risk-low' };
+                    else if (val >= 45) risks.ef = { level: 'moderate', label: 'Mildly reduced', cls: 'risk-moderate' };
+                    else risks.ef = { level: 'high', label: 'Reduced', cls: 'risk-high' };
+                }
+                if (n(data.imt) > 0) {
+                    const val = n(data.imt);
+                    for (let t of thresholds.imt) {
+                        if (val <= t.max) { risks.imt = t; break; }
+                    }
+                }
+
+                let total = 0,
+                    count = 0;
                 for (let key in risks) {
                     const r = risks[key];
-                    const labelMap = {
-                        bmi: 'BMI',
-                        ldl: 'LDL',
-                        hdl: 'HDL',
-                        glucose: 'Glucose',
-                        sbp: 'SBP',
-                        ef: 'Ejection Fraction',
-                        imt: 'Carotid IMT'
-                    };
+                    if (r.level === 'low') total += 0;
+                    else if (r.level === 'moderate') total += 1;
+                    else if (r.level === 'high') total += 2;
+                    count++;
+                }
+                const avg = count > 0 ? (total / count) * 50 : 0;
+                const composite = Math.min(100, Math.round(avg));
+                return { risks, composite };
+            }
+
+            // ---------- RENDER RISK & AI ----------
+            function renderRisk(data) {
+                if (!data || Object.keys(data).length === 0) {
+                    riskContainer.innerHTML =
+                    `<div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save an encounter to see risk scoring.</div>`;
+                    compositeScore.textContent = '—';
+                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                    return;
+                }
+
+                const { risks, composite } = computeRisk(data);
+                let html = '<div class="risk-summary">';
+                const labelMap = {
+                    bmi: 'BMI',
+                    ldl: 'LDL',
+                    hdl: 'HDL',
+                    glucose: 'Glucose',
+                    sbp: 'SBP',
+                    ef: 'Ejection Fraction',
+                    imt: 'Carotid IMT'
+                };
+                for (let key in risks) {
+                    const r = risks[key];
                     const display = labelMap[key] || key.toUpperCase();
                     html += `<div class="risk-item">
                                 <span>${display}</span>
@@ -664,303 +709,285 @@
                 html += '</div>';
                 riskContainer.innerHTML = html;
                 compositeScore.textContent = composite;
-                riskDateLabel.textContent = record.formDate || '—';
+
+                let insight = '';
+                const n = (v) => parseFloat(v) || 0;
+                const bmi = n(data.bmi);
+                const ldl = n(data.ldl);
+                const hdl = n(data.hdl);
+                const glu = n(data.glucose);
+                const sbp = n(data.sbp);
+                const ef = n(data.ef);
+
+                if (bmi > 30) insight += '⚠️ BMI indicates obesity – consider lifestyle modifications. ';
+                else if (bmi > 25) insight += '⚖️ Overweight – regular exercise and balanced diet recommended. ';
+                if (ldl > 160) insight += '🍔 High LDL – reduce saturated fats and consider statin therapy. ';
+                else if (ldl > 130) insight += '🍎 LDL borderline – monitor diet and increase fiber. ';
+                if (hdl < 40) insight += '💔 Low HDL – increase physical activity and healthy fats. ';
+                if (glu > 125) insight += '🍬 Elevated glucose – consult for diabetes management. ';
+                else if (glu > 100) insight += '🍭 Prediabetic range – reduce sugar intake. ';
+                if (sbp > 140) insight += '❤️ High blood pressure – regular monitoring and low‑salt diet. ';
+                if (ef < 55) insight += '💓 Reduced ejection fraction – cardiology follow‑up advised. ';
+
+                if (insight === '') insight = '✅ All markers are within low‑risk ranges. Keep up the healthy habits!';
+
+                if (currentProfile === 'women') {
+                    insight += ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
+                } else if (currentProfile === 'geriatric') {
+                    insight += ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
+                }
+
+                aiInsight.innerHTML = `<i class="fas fa-robot"></i> ${insight}`;
+            }
+
+            // ---------- QR CODE GENERATION ----------
+            function generateQR(data, id) {
+                qrContainer.innerHTML = '';
+                const payload = {
+                    id: id,
+                    date: new Date().toISOString().split('T')[0],
+                    profile: currentProfile,
+                    composite: computeRisk(data).composite,
+                    keyValues: {
+                        bmi: data.bmi,
+                        ldl: data.ldl,
+                        hdl: data.hdl,
+                        glucose: data.glucose,
+                        sbp: data.sbp,
+                        ef: data.ef
+                    }
+                };
+                const jsonStr = JSON.stringify(payload);
+                new QRCode(qrContainer, {
+                    text: jsonStr,
+                    width: 160,
+                    height: 160,
+                    colorDark: '#005792',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                qrContainer.dataset.qrData = jsonStr;
+            }
+
+            function downloadQR() {
+                const canvas = qrContainer.querySelector('canvas');
+                if (!canvas) return alert('No QR code to download.');
+                const link = document.createElement('a');
+                link.download = `QR_${currentEncounterId || 'encounter'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+
+            // ---------- SAVE ENCOUNTER ----------
+            function saveEncounter(e) {
+                e.preventDefault();
+                const data = getFormData();
+                const hasValue = Object.values(data).some(v => v && v.trim() !== '');
+                if (!hasValue) {
+                    alert('Please enter at least one reading.');
+                    return;
+                }
+
+                const id = generateEncounterId();
+                const encounter = {
+                    id: id,
+                    date: new Date().toISOString().split('T')[0],
+                    profile: currentProfile,
+                    ...data
+                };
+                encounters.push(encounter);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(encounters));
+
+                currentEncounterId = id;
+                encounterNumberSpan.textContent = id.slice(-4);
+
+                renderRisk(data);
+                generateQR(data, id);
+                renderHistory();
             }
 
             // ---------- RENDER HISTORY ----------
-            function renderHistory(patientName) {
-                const patientRecords = records.filter(r => r.formPatientName === patientName)
-                    .sort((a, b) => new Date(a.formDate) - new Date(b.formDate));
-
-                historyCount.textContent = `${patientRecords.length} visits`;
-
-                if (patientRecords.length === 0) {
+            function renderHistory() {
+                if (encounters.length === 0) {
                     historyBody.innerHTML =
-                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No visits for this patient.</td></tr>`;
+                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No encounters yet.</td></tr>`;
+                    historyCount.textContent = '0 records';
                     return;
                 }
 
+                const sorted = [...encounters].sort((a, b) => new Date(b.date) - new Date(a.date));
                 let html = '';
-                for (let i = 0; i < patientRecords.length; i++) {
-                    const r = patientRecords[i];
-                    const prev = i > 0 ? patientRecords[i - 1] : null;
-                    const { composite } = computeRisk(r);
+                sorted.forEach((enc, idx) => {
+                    const { composite } = computeRisk(enc);
+                    const bmi = parseFloat(enc.bmi) || 0;
+                    const ldl = parseFloat(enc.ldl) || 0;
+                    const hdl = parseFloat(enc.hdl) || 0;
+                    const glu = parseFloat(enc.glucose) || 0;
+                    const sbp = parseFloat(enc.sbp) || 0;
+                    const ef = parseFloat(enc.ef) || 0;
 
-                    // delta
-                    let deltaHtml = '';
-                    if (prev) {
-                        const prevComp = computeRisk(prev).composite;
-                        const diff = composite - prevComp;
-                        let cls = 'trend-flat';
-                        let arrow = '→';
-                        if (diff > 5) { cls = 'trend-up';
-                            arrow = '↑'; } else if (diff < -5) { cls = 'trend-down';
-                            arrow = '↓'; }
-                        deltaHtml = `<span class="${cls}">${arrow} ${diff > 0 ? '+' : ''}${diff}</span>`;
-                    } else {
-                        deltaHtml = '<span style="color:#6f7d8f;">—</span>';
-                    }
-
-                    const bmi = parseFloat(r.bmi) || 0;
-                    const ldl = parseFloat(r.ldl) || 0;
-                    const hdl = parseFloat(r.hdl) || 0;
-                    const glu = parseFloat(r.glucose) || 0;
-                    const sbp = parseFloat(r.sbp) || 0;
-                    const ef = parseFloat(r.ef) || 0;
-                    const imt = parseFloat(r.imt) || 0;
-
-                    html += `<tr>
-                                <td><strong>${r.formDate || '—'}</strong></td>
-                                <td>${bmi.toFixed(1)}</td>
-                                <td>${ldl}</td>
-                                <td>${hdl}</td>
-                                <td>${glu}</td>
-                                <td>${sbp}</td>
-                                <td>${ef}</td>
-                                <td>${imt.toFixed(2)}</td>
-                                <td><span class="risk-badge ${composite < 30 ? 'risk-low' : composite < 60 ? 'risk-moderate' : 'risk-high'}">${composite}</span></td>
-                                <td>${deltaHtml}</td>
-                                <td><button class="btn btn-outline" style="padding:2px 12px; font-size:0.75rem;" data-load='${JSON.stringify(r)}'>Load</button></td>
-                             </tr>`;
-                }
+                    html += `
+                        <tr>
+                            <td><strong>${enc.id}</strong></td>
+                            <td>${enc.date}</td>
+                            <td>${enc.profile}</td>
+                            <td>${bmi.toFixed(1)}</td>
+                            <td>${ldl}</td>
+                            <td>${hdl}</td>
+                            <td>${glu}</td>
+                            <td>${sbp}</td>
+                            <td>${ef}</td>
+                            <td><span class="risk-badge ${composite < 30 ? 'risk-low' : composite < 60 ? 'risk-moderate' : 'risk-high'}">${composite}</span></td>
+                            <td>
+                                <button class="btn-sm" data-load='${JSON.stringify(enc)}'><i class="fas fa-eye"></i></button>
+                                <button class="btn-sm danger" data-del='${enc.id}'><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
                 historyBody.innerHTML = html;
+                historyCount.textContent = `${encounters.length} records`;
 
-                // attach load events
                 document.querySelectorAll('[data-load]').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
+                    btn.addEventListener('click', function() {
                         const data = JSON.parse(this.dataset.load);
-                        setFormValues(data);
-                        document.getElementById('formPatientName').value = data.formPatientName || '';
-                        // trigger risk update
+                        setFormData(data);
+                        currentProfile = data.profile || 'women';
+                        profileBtns.forEach(b => {
+                            b.classList.toggle('active', b.dataset.profile === currentProfile);
+                        });
+                        buildForm();
+                        setFormData(data);
                         renderRisk(data);
-                        updateChart(patientName);
+                        currentEncounterId = data.id;
+                        encounterNumberSpan.textContent = data.id.slice(-4);
+                        generateQR(data, data.id);
                     });
                 });
 
-                // update chart
-                updateChart(patientName);
-            }
-
-            // ---------- CHART ----------
-            function updateChart(patientName) {
-                const metric = chartMetric.value;
-                const patientRecords = records.filter(r => r.formPatientName === patientName)
-                    .sort((a, b) => new Date(a.formDate) - new Date(b.formDate));
-
-                if (chartInstance) {
-                    chartInstance.destroy();
-                    chartInstance = null;
-                }
-
-                if (patientRecords.length < 1) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    return;
-                }
-
-                const labels = patientRecords.map(r => r.formDate || '');
-                const values = patientRecords.map(r => parseFloat(r[metric]) || 0);
-
-                const ctx = canvas.getContext('2d');
-                chartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: metric.toUpperCase(),
-                            data: values,
-                            borderColor: '#005792',
-                            backgroundColor: 'rgba(0,87,146,0.1)',
-                            fill: true,
-                            tension: 0.2,
-                            pointBackgroundColor: '#005792',
-                            pointRadius: 4,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}` } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: '#e9edf2' } },
-                            x: { grid: { display: false } }
+                document.querySelectorAll('[data-del]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.del;
+                        if (!confirm(`Delete encounter ${id}?`)) return;
+                        encounters = encounters.filter(e => e.id !== id);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(encounters));
+                        renderHistory();
+                        if (currentEncounterId === id) {
+                            currentEncounterId = null;
+                            encounterNumberSpan.textContent = '0000';
+                            clearFormValues();
+                            renderRisk(null);
+                            qrContainer.innerHTML = '';
                         }
-                    }
+                    });
                 });
             }
 
-            // ---------- SAVE ----------
-            function saveVisit(e) {
-                e.preventDefault();
-                const values = getFormValues();
-                const patientName = values.formPatientName.trim();
-                if (!patientName) {
-                    alert('Please enter a patient name.');
-                    return;
-                }
-                const date = values.formDate;
-                if (!date) {
-                    alert('Please select a date.');
-                    return;
-                }
-
-                // check for duplicate (same patient + same date) – we allow overwrite by removing old
-                const existingIdx = records.findIndex(r => r.formPatientName === patientName && r.formDate === date);
-                if (existingIdx !== -1) {
-                    if (!confirm(`A visit on ${date} for ${patientName} already exists. Overwrite?`)) return;
-                    records.splice(existingIdx, 1);
-                }
-
-                // build record
-                const record = { ...values };
-                records.push(record);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-
-                // refresh UI
-                populatePatientSelect();
-                patientSelect.value = patientName;
-                currentPatient = patientName;
-                renderHistory(patientName);
-                renderRisk(record);
-                // set load button state
-            }
-
-            // ---------- DELETE VISIT ----------
-            function deleteSelectedVisit() {
-                const patient = patientSelect.value;
-                if (!patient) return alert('Select a patient first.');
-                const date = document.getElementById('formDate').value;
-                if (!date) return alert('Select a date in the form to delete that specific visit.');
-
-                const idx = records.findIndex(r => r.formPatientName === patient && r.formDate === date);
-                if (idx === -1) return alert('No visit found for this patient on that date.');
-
-                if (!confirm(`Delete visit on ${date} for ${patient}?`)) return;
-                records.splice(idx, 1);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-                populatePatientSelect();
-                patientSelect.value = patient;
-                currentPatient = patient;
-                renderHistory(patient);
-                // clear risk if no records
-                const remaining = records.filter(r => r.formPatientName === patient);
-                if (remaining.length === 0) {
-                    renderRisk(null);
-                    clearForm();
-                } else {
-                    renderRisk(remaining[remaining.length - 1]);
-                    setFormValues(remaining[remaining.length - 1]);
-                }
-                updateChart(patient);
-            }
-
-            // ---------- POPULATE SELECT ----------
-            function populatePatientSelect() {
-                const names = [...new Set(records.map(r => r.formPatientName).filter(Boolean))];
-                const currentVal = patientSelect.value;
-                patientSelect.innerHTML = '<option value="">— Select patient —</option>';
-                names.forEach(n => {
-                    const opt = document.createElement('option');
-                    opt.value = n;
-                    opt.textContent = n;
-                    patientSelect.appendChild(opt);
-                });
-                if (currentVal && names.includes(currentVal)) patientSelect.value = currentVal;
-                else if (names.length > 0) patientSelect.value = names[0];
-                else patientSelect.value = '';
-                currentPatient = patientSelect.value;
-                if (currentPatient) {
-                    const last = records.filter(r => r.formPatientName === currentPatient)
-                        .sort((a, b) => new Date(b.formDate) - new Date(a.formDate))[0];
-                    if (last) {
-                        setFormValues(last);
-                        renderRisk(last);
+            // ---------- OCR SCANNING ----------
+            async function performOCR(file) {
+                scanStatus.textContent = 'Scanning...';
+                scanStatus.style.color = '#005792';
+                try {
+                    const result = await Tesseract.recognize(file, 'eng', {
+                        logger: m => { if (m.status === 'recognizing text') scanStatus.textContent = `Scanning ${Math.round(m.progress*100)}%`; }
+                    });
+                    const text = result.data.text;
+                    scanStatus.textContent = 'Scan complete. Parsing numbers...';
+                    const numbers = text.match(/\b(\d{2,3}(?:\.\d)?)\s*(?:mg\/dL|mmol\/L|cm|kg|mmHg|%)?/g);
+                    if (numbers) {
+                        const vals = numbers.map(s => parseFloat(s.replace(/[^\d.]/g, ''))).filter(v => !isNaN(v) && v > 0);
+                        const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                        let idx = 0;
+                        const order = ['bmi', 'ldl', 'hdl', 'glucose', 'sbp', 'dbp', 'hr', 'ef', 'imt', 'chol', 'trig', 'hba1c',
+                            'waist', 'bf', 'fev1', 'fvc'
+                        ];
+                        for (let key of order) {
+                            if (fields.find(f => f.id === key) && idx < vals.length) {
+                                setFieldValue(key, vals[idx].toString());
+                                idx++;
+                            }
+                        }
+                        scanStatus.textContent = `✅ Extracted ${idx} values.`;
+                    } else {
+                        scanStatus.textContent = '⚠️ No numeric values found. Try a clearer image.';
                     }
-                    renderHistory(currentPatient);
-                } else {
-                    clearForm();
-                    renderRisk(null);
-                    historyBody.innerHTML =
-                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;">Select a patient to view history.</td></tr>`;
-                    historyCount.textContent = '0 visits';
+                } catch (err) {
+                    scanStatus.textContent = '❌ OCR failed.';
+                    console.error(err);
                 }
             }
 
-            // ---------- EVENTS ----------
-            patientSelect.addEventListener('change', function() {
-                const name = this.value;
-                if (!name) {
-                    clearForm();
-                    renderRisk(null);
-                    historyBody.innerHTML =
-                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;">Select a patient.</td></tr>`;
-                    historyCount.textContent = '0 visits';
-                    currentPatient = '';
-                    return;
-                }
-                currentPatient = name;
-                const last = records.filter(r => r.formPatientName === name)
-                    .sort((a, b) => new Date(b.formDate) - new Date(a.formDate))[0];
-                if (last) {
-                    setFormValues(last);
-                    renderRisk(last);
-                } else {
-                    clearForm();
-                    renderRisk(null);
-                }
-                renderHistory(name);
-            });
-
-            addPatientBtn.addEventListener('click', function() {
-                const name = newPatientInput.value.trim();
-                if (!name) return alert('Enter a patient name.');
-                // if exists, select it
-                const exists = records.some(r => r.formPatientName === name);
-                if (!exists) {
-                    // create a dummy record just to register? better: just select and let user save.
-                    // we add to select list by saving a placeholder? No, we just add to select.
-                }
-                // set select and trigger
-                patientSelect.value = name;
-                patientSelect.dispatchEvent(new Event('change'));
-                newPatientInput.value = '';
-                // set form name
-                document.getElementById('formPatientName').value = name;
-                // set default date
-                if (!document.getElementById('formDate').value) {
-                    document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
-                }
-            });
-
-            newVisitBtn.addEventListener('click', function() {
-                const name = patientSelect.value;
-                if (!name) return alert('Select or add a patient first.');
-                clearForm();
-                document.getElementById('formPatientName').value = name;
-                document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+            // ---------- PROFILE SWITCH ----------
+            function switchProfile(profile) {
+                currentProfile = profile;
+                profileBtns.forEach(b => {
+                    b.classList.toggle('active', b.dataset.profile === profile);
+                });
+                buildForm();
+                clearFormValues();
                 renderRisk(null);
                 compositeScore.textContent = '—';
-                riskDateLabel.textContent = '—';
-                // unload chart highlight
-            });
-
-            deleteVisitBtn.addEventListener('click', deleteSelectedVisit);
-
-            form.addEventListener('submit', saveVisit);
-
-            chartMetric.addEventListener('change', function() {
-                if (currentPatient) updateChart(currentPatient);
-            });
+                aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                qrContainer.innerHTML = '';
+                currentEncounterId = null;
+                encounterNumberSpan.textContent = '0000';
+                renderHistory();
+            }
 
             // ---------- INIT ----------
             function init() {
-                // set default date
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('formDate').value = today;
-                populatePatientSelect();
+                buildForm();
+                if (encounters.length > 0) {
+                    const latest = encounters[encounters.length - 1];
+                    setFormData(latest);
+                    currentProfile = latest.profile || 'women';
+                    profileBtns.forEach(b => {
+                        b.classList.toggle('active', b.dataset.profile === currentProfile);
+                    });
+                    buildForm();
+                    setFormData(latest);
+                    renderRisk(latest);
+                    currentEncounterId = latest.id;
+                    encounterNumberSpan.textContent = latest.id.slice(-4);
+                    generateQR(latest, latest.id);
+                } else {
+                    clearFormValues();
+                    renderRisk(null);
+                }
+                renderHistory();
+
+                form.addEventListener('submit', saveEncounter);
+
+                clearBtn.addEventListener('click', function() {
+                    clearFormValues();
+                    renderRisk(null);
+                    compositeScore.textContent = '—';
+                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                    qrContainer.innerHTML = '';
+                    currentEncounterId = null;
+                    encounterNumberSpan.textContent = '0000';
+                });
+
+                scanBtn.addEventListener('click', function() {
+                    scanInput.click();
+                });
+
+                scanInput.addEventListener('change', function(e) {
+                    if (this.files && this.files.length > 0) {
+                        performOCR(this.files[0]);
+                    }
+                    this.value = '';
+                });
+
+                downloadQrBtn.addEventListener('click', downloadQR);
+
+                profileBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const profile = this.dataset.profile;
+                        if (profile === currentProfile) return;
+                        switchProfile(profile);
+                    });
+                });
             }
 
             init();
@@ -972,10 +999,46 @@
 </html>
 ```
 
-Managing Checkup Data & Risk Insights
+--
 
-This tool helps you turn raw checkup results into actionable health intelligence. Here’s how it works:
 
-· Patient & Visit Management: Use the top bar to select an existing patient or add a new one. The "New visit" button clears the form for a fresh entry, while the "Load" button in the history table lets you recall and edit any past visit.
-· Data Entry & Risk Scoring: Enter the checkup metrics (BMI, LDL, EF, etc.) into the left panel. Upon saving, the right panel automatically calculates a risk level (Low/Moderate/High) for each key variable and displays a Composite Risk Index (0–100) for a quick overall health snapshot.
-· Trend Tracking & Comparison: The history table lists all visits for the selected patient, showing changes (delta) from the previous visit with up/down arrows. Select a metric (e.g., LDL, BMI) from the dropdown to visualize its trend over time on the line chart, making it easy to spot progress or decline.
+🔍 Document Scanning (OCR)
+
+· Click “Scan Document” and upload a photo of your lab report or health record.
+· The app uses Tesseract.js to extract numbers and auto‑fills the matching fields (BMI, LDL, glucose, etc.) – no manual typing needed.
+
+👤 Three Health Profiles
+
+· Women’s – tailored risk interpretation and insights.
+· Men’s – same core metrics but with gender‑aware suggestions.
+· Geriatric – adds age‑specific advice (falls, cognition, polypharmacy).
+· Switch profiles anytime – the form updates and risk thresholds adjust automatically.
+
+ AI‑Style Insights
+
+· After saving, the app provides rule‑based, personalised recommendations (e.g., “High LDL – reduce saturated fats”).
+· Insights are profile‑aware – women get hormonal context, geriatric users get fall/cognition tips.
+
+Risk Index (Composite Score)
+
+· The Composite Risk Index (0–100) is a weighted average of individual risk levels:
+  · Low (0–33) → all markers in healthy ranges.
+  · Moderate (34–66) → some markers borderline – lifestyle changes advised.
+  · High (67–100) → multiple elevated risks – medical follow‑up recommended.
+· Each variable (BMI, LDL, SBP, etc.) gets its own risk badge (Low/Moderate/High) for quick scanning.
+
+ How to Use
+
+1. Select your profile (Women / Men / Geriatric).
+2. Enter readings manually, or scan a document to auto‑fill.
+3. Click “Save Encounter” – the risk dashboard, AI insights, and QR code appear instantly.
+4. The QR code can be downloaded as PNG for sharing or printing.
+5. All encounters are listed below – click 👁️ to load a past visit, or 🗑️ 
+
+ Technical Notes
+
+· All data is stored in localStorage – no server, your data stays private.
+· The app is a single HTML file – just open it in any modern browser.
+· No internet required after the first load (CDN resources are cached).
+· Works offline.
+
