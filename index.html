@@ -2,59 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEDFIT BRAVO · Prevention, Screening, Reha AI toolkit </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>MEDFIT BRAVO · Prevention, Screening, Reha AI</title>
 
     <!-- ========== DEPENDENCIES ========== -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     <style>
-        /* ---------- RESET & BASE ---------- */
+        /* ---------- RESET & BASE – Mobile First ---------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
         }
         body {
             background: #f0f5fa;
-            padding: 20px;
+            padding: 8px;
             color: #1e2a3a;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            font-size: 14px;
         }
         .container {
-            max-width: 1600px;
+            max-width: 800px;
             margin: 0 auto;
+            width: 100%;
             flex: 1;
         }
 
-        /* ---------- HEADER ---------- */
         .app-header {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
             background: white;
-            padding: 12px 24px;
-            border-radius: 24px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-            margin-bottom: 20px;
-            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 10px;
+            gap: 6px;
         }
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
         }
         .brand h1 {
             font-weight: 800;
-            font-size: 1.6rem;
+            font-size: 1.1rem;
             background: linear-gradient(135deg, #005792, #00b4d8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -62,39 +63,37 @@
         }
         .brand h1 i {
             -webkit-text-fill-color: #005792;
-            margin-right: 6px;
+            margin-right: 2px;
         }
-        .brand .tagline {
-            font-size: 0.6rem;
+        .brand .badge {
+            font-size: 0.45rem;
             font-weight: 700;
-            color: #4a5b6e;
-            background: #eef2f7;
-            padding: 2px 12px;
+            color: white;
+            background: #28a745;
+            padding: 1px 8px;
             border-radius: 30px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             text-transform: uppercase;
         }
-
         .header-controls {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 10px;
+            gap: 4px;
         }
-
         .lang-selector {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             background: #f0f4fa;
-            padding: 3px;
-            border-radius: 40px;
+            padding: 2px;
+            border-radius: 30px;
         }
         .lang-btn {
-            padding: 3px 10px;
+            padding: 2px 8px;
             border: none;
             border-radius: 30px;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.55rem;
             cursor: pointer;
             background: transparent;
             color: #4a5b6e;
@@ -107,25 +106,36 @@
         .lang-btn:hover:not(.active) {
             background: #d9e1ec;
         }
+        .encounter-id {
+            font-size: 0.55rem;
+            background: #eef2f7;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #1e2a3a;
+            white-space: nowrap;
+        }
 
         .profile-selector {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             flex-wrap: wrap;
+            margin-bottom: 6px;
         }
         .profile-btn {
-            padding: 5px 14px;
-            border-radius: 40px;
-            border: 2px solid #d9e1ec;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1.5px solid #d9e1ec;
             background: white;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             cursor: pointer;
             transition: 0.2s;
             color: #1e2a3a;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            flex: 1 0 auto;
+            justify-content: center;
         }
         .profile-btn.active {
             background: #005792;
@@ -136,99 +146,176 @@
             background: #eef2f7;
         }
         .profile-btn i {
-            font-size: 0.8rem;
-        }
-
-        .encounter-id {
             font-size: 0.7rem;
-            background: #eef2f7;
-            padding: 4px 12px;
-            border-radius: 30px;
-            color: #1e2a3a;
-            white-space: nowrap;
         }
 
-        /* ---------- GRID ---------- */
+        .instructions {
+            background: white;
+            border-radius: 14px;
+            padding: 6px 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 10px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            max-height: 200px;
+        }
+        .instructions.collapsed {
+            max-height: 0;
+            padding: 0 12px;
+            margin: 0;
+            border: none;
+        }
+        .instructions .step {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.6rem;
+            color: #1e2a3a;
+        }
+        .instructions .step .num {
+            background: #005792;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.5rem;
+            flex-shrink: 0;
+        }
+        .instructions .step i {
+            color: #00b4d8;
+            font-size: 0.7rem;
+        }
+        .toggle-instr {
+            background: none;
+            border: none;
+            color: #4a5b6e;
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            margin-left: auto;
+        }
+
         .grid-2 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
-        /* ---------- CARDS ---------- */
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 18px 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-            transition: 0.2s;
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         .card h3 {
             font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 12px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #1e2a3a;
         }
         .card h3 i {
             color: #005792;
-            width: 20px;
-            font-size: 1rem;
+            width: 16px;
+            font-size: 0.8rem;
         }
 
-        /* ---------- DEMOGRAPHICS BAR ---------- */
         .demo-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px 16px;
+            gap: 4px 8px;
             background: #f8fafc;
-            padding: 8px 14px;
-            border-radius: 14px;
-            margin-bottom: 12px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
             align-items: center;
         }
         .demo-bar .demo-group {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
+            gap: 3px;
+            font-size: 0.65rem;
         }
         .demo-bar .demo-group label {
             font-weight: 700;
             color: #4a5b6e;
             text-transform: uppercase;
-            font-size: 0.65rem;
+            font-size: 0.5rem;
         }
         .demo-bar .demo-group select,
         .demo-bar .demo-group input {
-            padding: 4px 8px;
-            border-radius: 10px;
+            padding: 2px 4px;
+            border-radius: 6px;
             border: 1px solid #d9e1ec;
-            font-size: 0.8rem;
+            font-size: 0.65rem;
             background: white;
+            width: 50px;
         }
-        .demo-bar .demo-group select:focus,
-        .demo-bar .demo-group input:focus {
-            outline: 2px solid #005792;
-            border-color: transparent;
+        .demo-bar .demo-group select {
+            width: 60px;
+        }
+        .demo-bar .demo-group input[type="number"] {
+            width: 42px;
         }
 
-        /* ---------- FORM ---------- */
+        .goals-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 4px 0 8px;
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 10px;
+        }
+        .goals-section .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.6rem;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .goals-section .goal-item i {
+            color: #28a745;
+        }
+        .goals-section .goal-item input {
+            border: none;
+            width: 30px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-align: center;
+            background: transparent;
+        }
+        .goals-section .goal-item input:focus {
+            outline: 2px solid #005792;
+            border-radius: 4px;
+        }
+
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 8px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
         }
         .form-group label {
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.2px;
@@ -236,17 +323,16 @@
             display: flex;
             justify-content: space-between;
         }
-        .form-group input,
-        .form-group select {
-            padding: 5px 8px;
-            border-radius: 10px;
+        .form-group input {
+            padding: 4px 6px;
+            border-radius: 8px;
             border: 1px solid #e2e8f0;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             background: #fafcfe;
             transition: 0.15s;
+            width: 100%;
         }
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             outline: 2px solid #005792;
             border-color: transparent;
         }
@@ -257,28 +343,30 @@
 
         .action-bar {
             display: flex;
-            gap: 10px;
-            margin: 14px 0 0;
+            gap: 6px;
+            margin: 8px 0 0;
             flex-wrap: wrap;
         }
         .action-bar .btn {
-            padding: 7px 16px;
-            border-radius: 40px;
+            padding: 5px 12px;
+            border-radius: 30px;
             border: none;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
         }
-        .btn-primary {
-            background: #005792;
+        .btn-success {
+            background: #28a745;
             color: white;
         }
-        .btn-primary:hover {
-            background: #003f6b;
+        .btn-success:hover {
+            background: #1e7e34;
         }
         .btn-outline {
             background: transparent;
@@ -288,35 +376,34 @@
         .btn-outline:hover {
             background: #eef2f7;
         }
-        .btn-success {
-            background: #28a745;
+        .btn-pdf {
+            background: #dc3545;
             color: white;
         }
-        .btn-success:hover {
-            background: #1e7e34;
+        .btn-pdf:hover {
+            background: #b02a37;
         }
 
-        /* ---------- RISK DISPLAY ---------- */
         .risk-summary {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin: 8px 0;
+            gap: 3px;
+            margin: 4px 0;
         }
         .risk-item {
-            flex: 1 0 100px;
+            flex: 1 0 60px;
             background: #f8fafc;
-            padding: 4px 10px;
-            border-radius: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.6rem;
         }
         .risk-badge {
-            padding: 1px 8px;
+            padding: 1px 5px;
             border-radius: 30px;
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -335,16 +422,16 @@
 
         .composite-box {
             background: linear-gradient(135deg, #eef6ff, #dbeafe);
-            border-radius: 14px;
-            padding: 10px 16px;
+            border-radius: 10px;
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin: 8px 0;
+            margin: 4px 0;
         }
         .composite-score {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: #005792;
         }
@@ -352,104 +439,57 @@
         .ai-insight {
             background: #f0f8ff;
             border-left: 4px solid #00b4d8;
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin: 8px 0;
-            font-size: 0.85rem;
-            line-height: 1.5;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin: 4px 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
             display: flex;
-            gap: 8px;
+            gap: 4px;
             align-items: flex-start;
-            max-height: 200px;
+            max-height: 120px;
             overflow-y: auto;
         }
         .ai-insight i {
             color: #00b4d8;
-            font-size: 1rem;
-            margin-top: 2px;
+            font-size: 0.8rem;
+            margin-top: 1px;
         }
         .ai-insight ul {
             margin: 0;
-            padding-left: 18px;
+            padding-left: 14px;
         }
         .ai-insight ul li {
-            margin-bottom: 2px;
-        }
-
-        .qr-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin: 8px 0;
-        }
-        #qrcode {
-            display: inline-block;
-            padding: 6px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-        .qr-brand {
-            font-size: 0.6rem;
-            color: #4a5b6e;
-            text-align: center;
-            margin-top: 2px;
-        }
-        .qr-brand a {
-            color: #005792;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .icf-domains {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px 10px;
-            font-size: 0.7rem;
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 10px;
-            margin: 6px 0;
-        }
-        .icf-domains .domain {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .icf-domains .domain i {
-            color: #005792;
-            width: 14px;
+            margin-bottom: 1px;
         }
 
         .chart-container {
-            height: 120px;
-            margin: 8px 0;
+            height: 70px;
+            margin: 4px 0;
         }
 
-        /* ---------- HISTORY TABLE ---------- */
         .history-section {
             margin-top: 4px;
         }
         .table-wrap {
             overflow-x: auto;
-            margin-top: 8px;
+            margin-top: 4px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.7rem;
+            font-size: 0.55rem;
         }
         th {
             text-align: left;
-            padding: 6px 5px;
+            padding: 3px 4px;
             background: #f0f4fa;
             font-weight: 700;
             border-bottom: 2px solid #d9e1ec;
+            white-space: nowrap;
         }
         td {
-            padding: 6px 5px;
+            padding: 3px 4px;
             border-bottom: 1px solid #e9edf2;
             vertical-align: middle;
         }
@@ -458,10 +498,10 @@
         }
 
         .btn-sm {
-            padding: 2px 10px;
+            padding: 2px 6px;
             border-radius: 30px;
             border: none;
-            font-size: 0.65rem;
+            font-size: 0.5rem;
             font-weight: 600;
             cursor: pointer;
             background: #eef2f7;
@@ -478,52 +518,14 @@
             background: #f5c6cb;
         }
 
-        /* ---------- INSTRUCTIONS ---------- */
-        .instructions {
-            background: white;
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px 24px;
-        }
-        .instructions .step {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: #1e2a3a;
-        }
-        .instructions .step .num {
-            background: #005792;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.65rem;
-            flex-shrink: 0;
-        }
-        .instructions .step i {
-            color: #00b4d8;
-            font-size: 1rem;
-        }
-
-        /* ---------- FOOTER ---------- */
         .app-footer {
-            margin-top: 28px;
-            padding: 14px 20px;
+            margin-top: 16px;
+            padding: 8px 12px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             color: #4a5b6e;
         }
         .app-footer a {
@@ -538,50 +540,208 @@
             font-weight: 700;
             color: #1e2a3a;
         }
+        .app-footer .care-aid-badge {
+            background: #28a745;
+            color: white;
+            padding: 1px 8px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
 
-        /* ---------- RESPONSIVE ---------- */
-        @media (max-width: 900px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .app-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            .header-controls {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .profile-selector {
-                justify-content: center;
-            }
+        @media (max-width: 480px) {
             .form-grid {
                 grid-template-columns: 1fr 1fr;
+                gap: 3px 6px;
             }
-            .instructions {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
+            .demo-bar .demo-group input {
+                width: 36px;
             }
-            .icf-domains {
-                grid-template-columns: 1fr;
+            .demo-bar .demo-group select {
+                width: 50px;
             }
-            .demo-bar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 6px;
+            .profile-btn {
+                font-size: 0.5rem;
+                padding: 3px 8px;
+            }
+            .brand h1 {
+                font-size: 0.95rem;
+            }
+            .goals-section .goal-item input {
+                width: 24px;
             }
         }
-        @media (max-width: 480px) {
-            .brand h1 {
-                font-size: 1.2rem;
-            }
-            .lang-selector {
-                flex-wrap: wrap;
+        @media (min-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
             }
             .form-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        /* ---------- PDF REPORT STYLES ---------- */
+        #pdfContent {
+            display: none;
+        }
+        .pdf-report {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 35px;
+            background: white;
+            color: #1e2a3a;
+            line-height: 1.5;
+        }
+        .pdf-report .pdf-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid #005792;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .pdf-report .pdf-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        /* ----- LOGO: "V" + "IRTUAL SOLUTIONS" (clickable) ----- */
+        .pdf-report .pdf-logo .logo-v {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #005792;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        .pdf-report .pdf-logo .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e2a3a;
+            letter-spacing: 1px;
+        }
+        .pdf-report .pdf-logo .logo-text span {
+            color: #005792;
+        }
+        .pdf-report .pdf-title {
+            text-align: right;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #005792;
+        }
+        .pdf-report .pdf-title small {
+            display: block;
+            font-weight: 400;
+            font-size: 0.7rem;
+            color: #4a5b6e;
+        }
+        .pdf-report .pdf-section {
+            margin-bottom: 16px;
+        }
+        .pdf-report .pdf-section h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #005792;
+            border-bottom: 1px solid #e9edf2;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+        .pdf-report .pdf-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 16px;
+            font-size: 0.75rem;
+        }
+        .pdf-report .pdf-grid-2 .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid #f0f4fa;
+        }
+        .pdf-report .pdf-grid-2 .item .label {
+            color: #4a5b6e;
+        }
+        .pdf-report .pdf-grid-2 .item .value {
+            font-weight: 600;
+        }
+        .pdf-report .pdf-risk-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .pdf-report .pdf-risk-low {
+            background: #d4edda;
+            color: #155724;
+        }
+        .pdf-report .pdf-risk-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .pdf-report .pdf-risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .pdf-report .pdf-tips {
+            font-size: 0.7rem;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-left: 4px solid #00b4d8;
+        }
+        .pdf-report .pdf-tips ul {
+            margin: 4px 0 0 16px;
+            padding: 0;
+        }
+        .pdf-report .pdf-tips ul li {
+            margin-bottom: 2px;
+        }
+        .pdf-report .pdf-table {
+            width: 100%;
+            font-size: 0.65rem;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+        .pdf-report .pdf-table th {
+            background: #f0f4fa;
+            padding: 4px 6px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid #d9e1ec;
+        }
+        .pdf-report .pdf-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .pdf-report .pdf-footer {
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 2px solid #e9edf2;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #6f7d8f;
+        }
+        .pdf-report .pdf-footer a {
+            color: #005792;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        @media (max-width: 500px) {
+            .pdf-report .pdf-grid-2 {
                 grid-template-columns: 1fr;
+            }
+            .pdf-report .pdf-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 6px;
+            }
+            .pdf-report .pdf-title {
+                text-align: center;
             }
         }
     </style>
@@ -590,11 +750,10 @@
 
     <div class="container">
 
-        <!-- ========== HEADER ========== -->
         <header class="app-header">
             <div class="brand">
                 <h1><i class="fas fa-heartbeat"></i> MEDFIT BRAVO</h1>
-                <span class="tagline"><i class="fas fa-robot"></i> BRAVO · Prevention, Screening, Reha AI toolkit</span>
+                <span class="badge"><i class="fas fa-robot"></i> Prevention · Screening · Reha</span>
             </div>
             <div class="header-controls">
                 <div class="lang-selector" id="langSelector">
@@ -603,86 +762,78 @@
                     <button class="lang-btn" data-lang="es">ES</button>
                     <button class="lang-btn" data-lang="ar">AR</button>
                 </div>
-                <div class="profile-selector">
-                    <button class="profile-btn active" data-profile="acute"><i class="fas fa-bolt"></i> Acute Rehab</button>
-                    <button class="profile-btn" data-profile="preventive"><i class="fas fa-shield-alt"></i> Preventive</button>
-                    <button class="profile-btn" data-profile="palliative"><i class="fas fa-heart"></i> Palliative</button>
-                </div>
-                <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-qrcode"></i> #<span id="encounterNumber">0000</span></span>
+                <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-file-pdf"></i> #<span id="encounterNumber">0000</span></span>
             </div>
         </header>
 
-        <!-- ========== INSTRUCTIONS ========== -->
+        <div class="profile-selector">
+            <button class="profile-btn active" data-profile="acute"><i class="fas fa-bolt"></i> Acute Rehab</button>
+            <button class="profile-btn" data-profile="preventive"><i class="fas fa-shield-alt"></i> Preventive</button>
+            <button class="profile-btn" data-profile="palliative"><i class="fas fa-heart"></i> Palliative</button>
+        </div>
+
         <div class="instructions" id="instructions">
             <div class="step"><span class="num">1</span> <i class="fas fa-edit"></i> <span data-i18n="step1">Enter patient data &amp; labs</span></div>
             <div class="step"><span class="num">2</span> <i class="fas fa-save"></i> <span data-i18n="step2">Save encounter</span></div>
             <div class="step"><span class="num">3</span> <i class="fas fa-chart-pie"></i> <span data-i18n="step3">View ICF recommendations &amp; trends</span></div>
-            <div class="step"><span class="num">4</span> <i class="fas fa-qrcode"></i> <span data-i18n="step4">QR with virtualcaresolution.de branding</span></div>
+            <div class="step"><span class="num">4</span> <i class="fas fa-file-pdf"></i> <span data-i18n="step4">PDF Report with logo</span></div>
+            <button class="toggle-instr" id="toggleInstrBtn"><i class="fas fa-chevron-up"></i></button>
         </div>
 
-        <!-- ========== MAIN GRID ========== -->
         <div class="grid-2">
 
-            <!-- LEFT: INPUT -->
             <div class="card">
                 <h3><i class="fas fa-edit"></i> <span data-i18n="enterReadings">Patient Assessment &amp; Labs</span></h3>
 
-                <!-- Demographics -->
                 <div class="demo-bar">
                     <div class="demo-group">
-                        <label><i class="fas fa-venus-mars"></i> <span data-i18n="gender">Gender</span></label>
+                        <label><i class="fas fa-venus-mars"></i></label>
                         <select id="gender">
-                            <option value="female">Female</option>
-                            <option value="male">Male</option>
-                            <option value="diverse">Diverse</option>
+                            <option value="female">♀ Female</option>
+                            <option value="male">♂ Male</option>
+                            <option value="diverse">⚧ Diverse</option>
                         </select>
                     </div>
                     <div class="demo-group">
-                        <label><i class="fas fa-calendar-alt"></i> <span data-i18n="age">Age</span></label>
-                        <input type="number" id="age" placeholder="65" min="0" max="120" style="width:70px;" />
+                        <label><i class="fas fa-calendar-alt"></i></label>
+                        <input type="number" id="age" placeholder="65" min="0" max="120" />
                     </div>
                     <div class="demo-group">
-                        <label><i class="fas fa-ruler"></i> <span data-i18n="height">Height (cm)</span></label>
-                        <input type="number" id="height" placeholder="170" step="0.5" style="width:70px;" />
+                        <label>cm</label>
+                        <input type="number" id="height" placeholder="170" step="0.5" />
                     </div>
                     <div class="demo-group">
-                        <label><i class="fas fa-weight"></i> <span data-i18n="weight">Weight (kg)</span></label>
-                        <input type="number" id="weight" placeholder="72" step="0.1" style="width:70px;" />
+                        <label>kg</label>
+                        <input type="number" id="weight" placeholder="72" step="0.1" />
                     </div>
                 </div>
 
+                <div class="goals-section">
+                    <div class="goal-item"><i class="fas fa-bullseye"></i> Pain: <input type="number" id="goal_pain" value="2" min="0" max="10" step="1" /></div>
+                    <div class="goal-item"><i class="fas fa-walking"></i> Mobility: <input type="number" id="goal_mobility" value="8" min="0" max="10" step="1" /></div>
+                    <div class="goal-item"><i class="fas fa-battery-half"></i> Energy: <input type="number" id="goal_energy" value="6" min="0" max="10" step="1" /></div>
+                </div>
+
                 <form id="checkupForm" autocomplete="off">
-                    <div class="form-grid" id="formFields">
-                        <!-- generated dynamically -->
-                    </div>
-
-                    <!-- ICF Domains (display only) -->
-                    <div class="icf-domains">
-                        <div class="domain"><i class="fas fa-walking"></i> <span data-i18n="icfBody">Body Functions</span></div>
-                        <div class="domain"><i class="fas fa-user"></i> <span data-i18n="icfActivity">Activities</span></div>
-                        <div class="domain"><i class="fas fa-users"></i> <span data-i18n="icfParticipation">Participation</span></div>
-                        <div class="domain"><i class="fas fa-home"></i> <span data-i18n="icfEnvironment">Environmental Factors</span></div>
-                    </div>
-
+                    <div class="form-grid" id="formFields"></div>
                     <div class="action-bar">
-                        <button type="submit" class="btn btn-success" style="flex:1;"><i class="fas fa-save"></i> <span data-i18n="saveEncounter">Save Encounter</span></button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> <span data-i18n="saveEncounter">Save</span></button>
                         <button type="reset" class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> <span data-i18n="clear">Clear</span></button>
+                        <button type="button" class="btn btn-pdf" id="pdfBtn"><i class="fas fa-file-pdf"></i> PDF Report</button>
                     </div>
                 </form>
             </div>
 
-            <!-- RIGHT: RISK, AI, QR, CHART -->
             <div class="card">
                 <h3><i class="fas fa-chart-pie"></i> <span data-i18n="riskInsights">ICF Recommendations &amp; Trends</span></h3>
                 <div id="riskContainer">
-                    <div style="color:#6f7d8f; padding:12px 0; text-align:center; font-size:0.85rem;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>
+                    <div style="color:#6f7d8f; padding:8px 0; text-align:center; font-size:0.7rem;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>
                 </div>
                 <div class="composite-box">
                     <span><i class="fas fa-shield-alt"></i> <span data-i18n="compositeIndex">Functionality Index</span></span>
                     <span class="composite-score" id="compositeScore">—</span>
                 </div>
 
-                <!-- Trend Chart -->
                 <div class="chart-container">
                     <canvas id="trendChart"></canvas>
                 </div>
@@ -690,22 +841,11 @@
                 <div class="ai-insight" id="aiInsight">
                     <i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>
                 </div>
-
-                <hr style="margin:10px 0; border-color:#e9edf2;" />
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                    <span><i class="fas fa-qrcode"></i> <span data-i18n="encounterQR">Care Plan QR</span></span>
-                    <button class="btn-sm" id="downloadQrBtn"><i class="fas fa-download"></i> <span data-i18n="download">Download</span></button>
-                </div>
-                <div class="qr-container">
-                    <div id="qrcode"></div>
-                </div>
-                <div class="qr-brand"><a href="https://virtualcaresolution.de" target="_blank">virtualcaresolution.de</a></div>
             </div>
         </div>
 
-        <!-- ========== HISTORY ========== -->
         <div class="card history-section">
-            <h3><i class="fas fa-history"></i> <span data-i18n="history">Encounter History &amp; Trend Log</span> <span style="font-size:0.7rem; font-weight:400; color:#4a5b6e;" id="historyCount">0 records</span></h3>
+            <h3><i class="fas fa-history"></i> <span data-i18n="history">Encounter History &amp; Trend Log</span> <span style="font-size:0.55rem; font-weight:400; color:#4a5b6e;" id="historyCount">0 records</span></h3>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -725,7 +865,7 @@
                         </tr>
                     </thead>
                     <tbody id="historyBody">
-                        <tr><td colspan="12" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>
+                        <tr><td colspan="12" style="text-align:center; color:#6f7d8f; font-size:0.65rem;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -733,44 +873,46 @@
 
     </div>
 
-    <!-- ========== FOOTER ========== -->
     <footer class="app-footer">
-        <span class="footer-brand">MEDFIT BRAVO</span> · <span data-i18n="footerText">ICF‑based rehabilitation &amp; palliative care</span> ·
+        <span class="footer-brand">MEDFIT BRAVO</span> · <span data-i18n="footerText">Prevention, Screening, Reha AI toolkit</span> ·
         <a href="https://virtualcaresolution.de" target="_blank">virtualcaresolution.de</a>
-        <span style="margin:0 6px;">·</span>
-        <span data-i18n="footerIp">Your IP</span>: <span id="ipDisplay">—</span>
-        <span style="margin:0 6px;">·</span>
-        <span data-i18n="whoStandard">WHO‑ICF aligned</span>
+        <span style="margin:0 4px;">·</span>
+        <span data-i18n="footerIp">IP</span>: <span id="ipDisplay">—</span>
+        <span style="margin:0 4px;">·</span>
+        <span class="care-aid-badge">🏠 Pflegehilfsmittel</span>
     </footer>
+
+    <!-- ========== PDF CONTENT (hidden) ========== -->
+    <div id="pdfContent">
+        <div class="pdf-report" id="pdfReportContent">
+            <!-- filled by JavaScript -->
+        </div>
+    </div>
 
     <script>
         // ============================================================
-        //  MEDFIT BRAVO – Rehab / Palliative / ICF‑based
-        //  + Gender, Age, Height, Weight
-        //  + Detailed lab tests
-        //  + Trend chart & log
-        //  + QR branded with virtualcaresolution.de
+        //  MEDFIT BRAVO – FINAL VERSION
+        //  Logo: "V" + "IRTUAL SOLUTIONS" (CSS re-creation)
+        //  Clickable link to virtualcaresolution.de
+        //  No QR code – PDF report only.
         // ============================================================
 
         (function() {
             'use strict';
 
-            // ---------- I18N ----------
             const i18n = {
                 en: {
                     step1: 'Enter patient data & labs',
                     step2: 'Save encounter',
                     step3: 'View ICF recommendations & trends',
-                    step4: 'QR with virtualcaresolution.de branding',
+                    step4: 'PDF Report with logo',
                     enterReadings: 'Patient Assessment & Labs',
                     clear: 'Clear',
-                    saveEncounter: 'Save Encounter',
+                    saveEncounter: 'Save',
                     riskInsights: 'ICF Recommendations & Trends',
                     saveToSeeRisk: 'Save an encounter to see ICF‑based recommendations.',
                     compositeIndex: 'Functionality Index',
                     aiPlaceholder: 'Evidence‑based, WHO‑aligned recommendations will appear after saving.',
-                    encounterQR: 'Care Plan QR',
-                    download: 'Download',
                     history: 'Encounter History & Trend Log',
                     id: 'ID',
                     date: 'Date',
@@ -782,32 +924,32 @@
                     functionIndex: 'Index',
                     action: 'Action',
                     noEncounters: 'No encounters yet.',
-                    footerText: 'ICF‑based rehabilitation & palliative care',
-                    footerIp: 'Your IP',
-                    whoStandard: 'WHO‑ICF aligned',
-                    icfBody: 'Body Functions',
-                    icfActivity: 'Activities',
-                    icfParticipation: 'Participation',
-                    icfEnvironment: 'Environmental Factors',
-                    gender: 'Gender',
-                    age: 'Age',
-                    height: 'Height (cm)',
-                    weight: 'Weight (kg)',
+                    footerText: 'Prevention, Screening, Reha AI toolkit',
+                    footerIp: 'IP',
+                    pdfTitle: 'Care Report',
+                    pdfPatient: 'Patient',
+                    pdfGender: 'Gender',
+                    pdfAge: 'Age',
+                    pdfDate: 'Report Date',
+                    pdfCurrentReadings: 'Current Check‑in',
+                    pdfCareIndex: 'Functionality Index',
+                    pdfIcfDomains: 'ICF Domains',
+                    pdfTips: 'Care Tips',
+                    pdfTrend: 'Trend Summary (last 5)',
+                    pdfFooter: 'Powered by MEDFIT BRAVO · virtualcaresolution.de',
                 },
                 de: {
                     step1: 'Patientendaten & Laborwerte eingeben',
                     step2: 'Termin speichern',
                     step3: 'ICF‑Empfehlungen & Trends anzeigen',
-                    step4: 'QR mit virtualcaresolution.de Branding',
+                    step4: 'PDF Bericht mit Logo',
                     enterReadings: 'Patientenbewertung & Labor',
                     clear: 'Löschen',
-                    saveEncounter: 'Termin speichern',
+                    saveEncounter: 'Speichern',
                     riskInsights: 'ICF‑Empfehlungen & Trends',
                     saveToSeeRisk: 'Speichern Sie einen Termin, um ICF‑basierte Empfehlungen zu sehen.',
                     compositeIndex: 'Funktionalitätsindex',
                     aiPlaceholder: 'Evidenzbasierte, WHO‑konforme Empfehlungen erscheinen nach dem Speichern.',
-                    encounterQR: 'Behandlungsplan QR',
-                    download: 'Herunterladen',
                     history: 'Terminverlauf & Trendprotokoll',
                     id: 'ID',
                     date: 'Datum',
@@ -819,32 +961,32 @@
                     functionIndex: 'Index',
                     action: 'Aktion',
                     noEncounters: 'Noch keine Termine.',
-                    footerText: 'ICF‑basierte Rehabilitation & Palliativversorgung',
-                    footerIp: 'Ihre IP',
-                    whoStandard: 'WHO‑ICF konform',
-                    icfBody: 'Körperfunktionen',
-                    icfActivity: 'Aktivitäten',
-                    icfParticipation: 'Partizipation',
-                    icfEnvironment: 'Umweltfaktoren',
-                    gender: 'Geschlecht',
-                    age: 'Alter',
-                    height: 'Größe (cm)',
-                    weight: 'Gewicht (kg)',
+                    footerText: 'Prävention, Screening, Reha AI-Toolkit',
+                    footerIp: 'IP',
+                    pdfTitle: 'Pflegebericht',
+                    pdfPatient: 'Patient',
+                    pdfGender: 'Geschlecht',
+                    pdfAge: 'Alter',
+                    pdfDate: 'Berichtsdatum',
+                    pdfCurrentReadings: 'Aktueller Check‑in',
+                    pdfCareIndex: 'Funktionalitätsindex',
+                    pdfIcfDomains: 'ICF-Domänen',
+                    pdfTips: 'Pflegetipps',
+                    pdfTrend: 'Trendübersicht (letzte 5)',
+                    pdfFooter: 'Betrieben von MEDFIT BRAVO · virtualcaresolution.de',
                 },
                 es: {
                     step1: 'Ingresar datos del paciente y laboratorios',
                     step2: 'Guardar encuentro',
                     step3: 'Ver recomendaciones ICF y tendencias',
-                    step4: 'QR con marca virtualcaresolution.de',
+                    step4: 'Informe PDF con logo',
                     enterReadings: 'Evaluación del paciente y laboratorios',
                     clear: 'Limpiar',
-                    saveEncounter: 'Guardar encuentro',
+                    saveEncounter: 'Guardar',
                     riskInsights: 'Recomendaciones ICF y tendencias',
                     saveToSeeRisk: 'Guarde un encuentro para ver recomendaciones basadas en ICF.',
                     compositeIndex: 'Índice de funcionalidad',
                     aiPlaceholder: 'Recomendaciones basadas en evidencia y alineadas con la OMS aparecerán después de guardar.',
-                    encounterQR: 'QR del plan de cuidados',
-                    download: 'Descargar',
                     history: 'Historial de encuentros y registro de tendencias',
                     id: 'ID',
                     date: 'Fecha',
@@ -856,32 +998,32 @@
                     functionIndex: 'Índice',
                     action: 'Acción',
                     noEncounters: 'Aún no hay encuentros.',
-                    footerText: 'Rehabilitación y cuidados paliativos basados en ICF',
-                    footerIp: 'Su IP',
-                    whoStandard: 'Alineado con OMS‑ICF',
-                    icfBody: 'Funciones corporales',
-                    icfActivity: 'Actividades',
-                    icfParticipation: 'Participación',
-                    icfEnvironment: 'Factores ambientales',
-                    gender: 'Género',
-                    age: 'Edad',
-                    height: 'Altura (cm)',
-                    weight: 'Peso (kg)',
+                    footerText: 'Prevención, Screening, Reha AI toolkit',
+                    footerIp: 'IP',
+                    pdfTitle: 'Informe de Cuidado',
+                    pdfPatient: 'Paciente',
+                    pdfGender: 'Género',
+                    pdfAge: 'Edad',
+                    pdfDate: 'Fecha del Informe',
+                    pdfCurrentReadings: 'Control actual',
+                    pdfCareIndex: 'Índice de funcionalidad',
+                    pdfIcfDomains: 'Dominios ICF',
+                    pdfTips: 'Consejos de cuidado',
+                    pdfTrend: 'Resumen de tendencia (últimos 5)',
+                    pdfFooter: 'Desarrollado por MEDFIT BRAVO · virtualcaresolution.de',
                 },
                 ar: {
                     step1: 'إدخال بيانات المريض والمختبرات',
                     step2: 'حفظ الزيارة',
                     step3: 'عرض توصيات ICF والاتجاهات',
-                    step4: 'QR مع علامة virtualcaresolution.de التجارية',
+                    step4: 'تقرير PDF مع الشعار',
                     enterReadings: 'تقييم المريض والمختبرات',
                     clear: 'مسح',
-                    saveEncounter: 'حفظ الزيارة',
+                    saveEncounter: 'حفظ',
                     riskInsights: 'توصيات ICF والاتجاهات',
                     saveToSeeRisk: 'احفظ زيارة لرؤية التوصيات المستندة إلى ICF.',
                     compositeIndex: 'مؤشر الوظائف',
                     aiPlaceholder: 'ستظهر توصيات قائمة على الأدلة ومتوافقة مع منظمة الصحة العالمية بعد الحفظ.',
-                    encounterQR: 'رمز QR لخطة الرعاية',
-                    download: 'تنزيل',
                     history: 'سجل الزيارات وسجل الاتجاهات',
                     id: 'المعرف',
                     date: 'التاريخ',
@@ -893,307 +1035,89 @@
                     functionIndex: 'المؤشر',
                     action: 'إجراء',
                     noEncounters: 'لا توجد زيارات بعد.',
-                    footerText: 'إعادة التأهيل والرعاية التلطيفية القائمة على ICF',
-                    footerIp: 'عنوان IP الخاص بك',
-                    whoStandard: 'متوافق مع منظمة الصحة العالمية-ICF',
-                    icfBody: 'وظائف الجسم',
-                    icfActivity: 'الأنشطة',
-                    icfParticipation: 'المشاركة',
-                    icfEnvironment: 'العوامل البيئية',
-                    gender: 'الجنس',
-                    age: 'العمر',
-                    height: 'الطول (سم)',
-                    weight: 'الوزن (كجم)',
+                    footerText: 'Prevención, Screening, Reha AI toolkit',
+                    footerIp: 'IP',
+                    pdfTitle: 'تقرير الرعاية',
+                    pdfPatient: 'المريض',
+                    pdfGender: 'الجنس',
+                    pdfAge: 'العمر',
+                    pdfDate: 'تاريخ التقرير',
+                    pdfCurrentReadings: 'الفحص الحالي',
+                    pdfCareIndex: 'مؤشر الوظائف',
+                    pdfIcfDomains: 'مجالات ICF',
+                    pdfTips: 'نصائح الرعاية',
+                    pdfTrend: 'ملخص الاتجاه (آخر 5)',
+                    pdfFooter: 'مدعوم من MEDFIT BRAVO · virtualcaresolution.de',
                 }
             };
 
             let currentLang = 'en';
-
-            // ---------- STORAGE ----------
-            const STORAGE_KEY = 'medfitBRAVO_rehab';
+            const STORAGE_KEY = 'medfitBravo_encounters';
             let encounters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let currentProfile = 'acute';
             let currentEncounterId = null;
             let chartInstance = null;
 
-            // ---------- FIELD DEFS (with detailed labs) ----------
             const FIELD_DEFS = {
                 acute: [
-                    // Core functional
-                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    // Vital signs
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'pain', label: 'Pain', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'sleep', label: 'Sleep', unit: 'hrs', step: '0.5' },
+                    { id: 'hr', label: 'HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    // Detailed labs
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
-                    { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
-                    { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'prealbumin', label: 'Prealbumin', unit: 'mg/dL', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
-                    // Cardiac
-                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'bnp', label: 'BNP / NT‑proBNP', unit: 'pg/mL', step: '1' },
-                    // Respiratory
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
-                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    // Metabolic
-                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
-                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
                 ],
                 preventive: [
-                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'pain', label: 'Pain', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'sleep', label: 'Sleep', unit: 'hrs', step: '0.5' },
+                    { id: 'hr', label: 'HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
-                    { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
-                    { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
-                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
-                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
-                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
-                    { id: 'bmd_t_score', label: 'BMD T‑Score', unit: 'SD', step: '0.1' },
+                    { id: 'exercise', label: 'Exercise', unit: 'min', step: '5' },
                 ],
                 palliative: [
-                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
+                    { id: 'pain', label: 'Pain', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'sleep', label: 'Sleep', unit: 'hrs', step: '0.5' },
+                    { id: 'hr', label: 'HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
-                    { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
-                    { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'prealbumin', label: 'Prealbumin', unit: 'mg/dL', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
-                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'bnp', label: 'BNP / NT‑proBNP', unit: 'pg/mL', step: '1' },
+                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
-                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
-                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
-                    { id: 'palliative_comfort', label: 'Comfort Score (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'comfort', label: 'Comfort', unit: '0‑10', step: '1', max: 10 },
                 ]
             };
 
-            // ---------- WHO / ICF BASED RECOMMENDATIONS ----------
-            function generateRecommendations(data, profile, age, gender) {
-                const n = (v) => parseFloat(v) || 0;
-                const pain = n(data.pain);
-                const mobility = n(data.mobility);
-                const fatigue = n(data.fatigue);
-                const func = n(data.function);
-                const ef = n(data.ef);
-                const sbp = n(data.sbp);
-                const hr = n(data.hr);
-                const hb = n(data.hb);
-                const crp = n(data.crp);
-                const creatinine = n(data.creatinine);
-                const egfr = n(data.egfr);
-                const albumin = n(data.albumin);
-                const vitd = n(data.vitd);
-                const glucose = n(data.glucose);
-                const hba1c = n(data.hba1c);
-                const ldl = n(data.ldl);
-                const bmi = n(data.bmi);
+            let currentProfile = 'acute';
 
-                let recs = [];
-                let icfDomains = { body: [], activity: [], participation: [], environment: [] };
-
-                // ---- ICF: Body Functions (b) ----
-                if (pain > 5) {
-                    recs.push('🔴 **Pain management**: WHO analgesic ladder – start with paracetamol/NSAIDs, escalate to opioids if needed. (ICF: b280)');
-                    icfDomains.body.push('Pain (b280) – moderate‑severe');
-                } else if (pain > 2) {
-                    recs.push('🟡 **Mild pain**: Regular pain assessment. Consider physical therapy modalities (TENS, heat/cold). (ICF: b280)');
-                    icfDomains.body.push('Pain (b280) – mild');
-                } else {
-                    recs.push('✅ **Pain well‑controlled**: Continue current management. (ICF: b280)');
-                }
-
-                if (fatigue > 6) {
-                    recs.push('🔴 **Severe fatigue**: Screen for anaemia, thyroid dysfunction, depression. Energy conservation techniques recommended. (ICF: b130)');
-                    icfDomains.body.push('Fatigue (b130) – severe');
-                } else if (fatigue > 3) {
-                    recs.push('🟡 **Moderate fatigue**: Encourage graded physical activity, sleep hygiene, nutritional support. (ICF: b130)');
-                    icfDomains.body.push('Fatigue (b130) – moderate');
-                }
-
-                // Anaemia
-                if (hb > 0 && hb < 120) {
-                    recs.push(`🔴 **Anaemia (Hb ${hb} g/dL)**: WHO defines anaemia as Hb <130 (men) / <120 (women) g/dL. Investigate iron, B12, folate status. (ICF: b430)`);
-                    icfDomains.body.push('Haemoglobin (b430) – low');
-                }
-
-                // Renal function
-                if (egfr > 0 && egfr < 60) {
-                    recs.push(`🔴 **Reduced eGFR (${egfr})**: CKD stage ≥3. Monitor renal function, adjust medications. (ICF: b610)`);
-                    icfDomains.body.push('Renal function (b610) – reduced');
-                }
-
-                // Inflammation
-                if (crp > 10) {
-                    recs.push(`🟡 **Elevated CRP (${crp} mg/L)**: Screen for infection, inflammation, or underlying disease. (ICF: b)`);
-                    icfDomains.body.push('Inflammation marker (CRP) – elevated');
-                }
-
-                // Nutritional
-                if (albumin > 0 && albumin < 35) {
-                    recs.push(`🔴 **Low albumin (${albumin} g/L)**: Malnutrition risk. Consider nutritional assessment and supplementation. (ICF: b530)`);
-                    icfDomains.body.push('Nutrition (b530) – at risk');
-                }
-
-                if (vitd > 0 && vitd < 50) {
-                    recs.push(`🟡 **Vitamin D insufficiency (${vitd} nmol/L)**: WHO recommends supplementation for deficiency (<50 nmol/L). (ICF: b)`);
-                    icfDomains.body.push('Vitamin D – insufficient');
-                }
-
-                // Metabolic
-                if (glucose > 7.0) {
-                    recs.push(`🔴 **Elevated glucose (${glucose} mmol/L)**: WHO criteria for diabetes (≥7.0 fasting). Refer for diabetes management. (ICF: b540)`);
-                    icfDomains.body.push('Glucose (b540) – diabetic range');
-                } else if (glucose > 5.6) {
-                    recs.push(`🟡 **Impaired fasting glucose (${glucose})**: Prediabetes – lifestyle interventions recommended. (ICF: b540)`);
-                    icfDomains.body.push('Glucose (b540) – prediabetic');
-                }
-
-                if (hba1c > 7.0) {
-                    recs.push(`🔴 **Elevated HbA1c (${hba1c}%)**: Poor glycaemic control. Review diabetes management. (ICF: b540)`);
-                }
-
-                if (ldl > 3.0) {
-                    recs.push(`🔴 **Elevated LDL (${ldl} mmol/L)**: WHO recommends statin therapy for high cardiovascular risk. (ICF: b)`);
-                    icfDomains.body.push('Lipids (LDL) – elevated');
-                }
-
-                if (sbp > 140) {
-                    recs.push('🔴 **Hypertension (SBP >140)**: WHO guidelines – lifestyle changes and antihypertensive therapy if persistent. (ICF: b420)');
-                    icfDomains.body.push('Blood pressure (b420) – elevated');
-                }
-
-                if (ef < 45) {
-                    recs.push('🔴 **Reduced ejection fraction (<45%)**: Cardiology review. Optimise heart failure therapy. (ICF: b410)');
-                    icfDomains.body.push('Cardiac function (b410) – reduced');
-                } else if (ef < 55) {
-                    recs.push('🟡 **Mildly reduced EF (45‑54%)**: Regular monitoring, lifestyle modifications. (ICF: b410)');
-                    icfDomains.body.push('Cardiac function (b410) – mildly reduced');
-                }
-
-                // ---- ICF: Activities (d) ----
-                if (mobility < 4) {
-                    recs.push('🔴 **Severe mobility limitation**: Physical therapy assessment for gait aids, strengthening, balance training. (ICF: d450)');
-                    icfDomains.activity.push('Mobility (d450) – severe limitation');
-                } else if (mobility < 7) {
-                    recs.push('🟡 **Moderate mobility limitation**: Structured exercise programme – 3‑5x/week. (ICF: d450)');
-                    icfDomains.activity.push('Mobility (d450) – moderate limitation');
-                } else {
-                    recs.push('✅ **Good mobility**: Maintain with regular physical activity (WHO: 150 min moderate/week). (ICF: d450)');
-                }
-
-                if (func < 4) {
-                    recs.push('🔴 **Severe functional limitation**: Multidisciplinary rehabilitation – OT, PT, social work. (ICF: d230)');
-                    icfDomains.activity.push('Daily activities (d230) – severe limitation');
-                } else if (func < 7) {
-                    recs.push('🟡 **Moderate functional limitation**: Goal‑setting with patient – focus on ADL independence. (ICF: d230)');
-                    icfDomains.activity.push('Daily activities (d230) – moderate limitation');
-                }
-
-                // ---- ICF: Participation (d9) ----
-                if (func < 5 || mobility < 5) {
-                    recs.push('🟡 **Participation restriction**: Assess social support, community mobility, return‑to‑work/leisure planning. (ICF: d920)');
-                    icfDomains.participation.push('Community participation (d920) – restricted');
-                }
-
-                // Age‑specific
-                if (age > 65) {
-                    recs.push('🧓 **Geriatric considerations**: WHO recommends falls risk assessment, polypharmacy review, and cognitive screening. (ICF: e)');
-                    icfDomains.environment.push('Geriatric assessment – recommended');
-                }
-
-                // ---- ICF: Environmental Factors (e) ----
-                if (profile === 'palliative') {
-                    recs.push('🕊️ **Palliative focus**: WHO recommends early integration. Address symptoms, goals of care, family support. (ICF: e310, e355)');
-                    icfDomains.environment.push('Family support (e310) – essential');
-                }
-
-                if (profile === 'acute') {
-                    recs.push('🏥 **Acute rehabilitation**: WHO recommends early mobilisation (24‑48h) to reduce ICU‑acquired weakness. (ICF: e580)');
-                    icfDomains.environment.push('Early mobilisation (e580) – indicated');
-                }
-
-                if (profile === 'preventive') {
-                    recs.push('🛡️ **Preventive care**: WHO recommends frailty, falls risk, osteoporosis screening in older adults. (ICF: e580)');
-                    icfDomains.environment.push('Preventive screening (e580) – recommended');
-                }
-
-                if (recs.length === 0) {
-                    recs.push('✅ All markers within normal ranges. Continue with current care plan and routine monitoring.');
-                }
-
-                return { recommendations: recs, icfDomains };
-            }
-
-            // ---------- DOM REFS ----------
+            // DOM refs
             const form = document.getElementById('checkupForm');
             const formFields = document.getElementById('formFields');
             const clearBtn = document.getElementById('clearBtn');
             const riskContainer = document.getElementById('riskContainer');
             const compositeScore = document.getElementById('compositeScore');
             const aiInsight = document.getElementById('aiInsight');
-            const qrContainer = document.getElementById('qrcode');
-            const downloadQrBtn = document.getElementById('downloadQrBtn');
+            const pdfBtn = document.getElementById('pdfBtn');
+            const toggleInstrBtn = document.getElementById('toggleInstrBtn');
+            const instructions = document.getElementById('instructions');
             const historyBody = document.getElementById('historyBody');
             const historyCount = document.getElementById('historyCount');
             const encounterNumberSpan = document.getElementById('encounterNumber');
-            const profileBtns = document.querySelectorAll('.profile-btn');
             const langBtns = document.querySelectorAll('.lang-btn');
             const ipDisplay = document.getElementById('ipDisplay');
             const canvas = document.getElementById('trendChart');
 
-            // ---------- UTILITY ----------
+            // ---------- UTILITIES ----------
             function getFieldValue(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
             function setFieldValue(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
@@ -1214,23 +1138,39 @@
                 if (data.weight) document.getElementById('weight').value = data.weight;
             }
 
+            function getGoals() {
+                return {
+                    pain: parseInt(document.getElementById('goal_pain').value) || 2,
+                    mobility: parseInt(document.getElementById('goal_mobility').value) || 8,
+                    energy: parseInt(document.getElementById('goal_energy').value) || 6,
+                };
+            }
+
+            function setGoals(data) {
+                if (data.pain_goal !== undefined) document.getElementById('goal_pain').value = data.pain_goal;
+                if (data.mobility_goal !== undefined) document.getElementById('goal_mobility').value = data.mobility_goal;
+                if (data.energy_goal !== undefined) document.getElementById('goal_energy').value = data.energy_goal;
+            }
+
             function getFormData() {
                 const data = {};
                 const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 fields.forEach(f => data[f.id] = getFieldValue(f.id));
                 data.profile = currentProfile;
-                // Add demographics
                 const demo = getDemographics();
                 data.gender = demo.gender;
                 data.age = demo.age;
                 data.height = demo.height;
                 data.weight = demo.weight;
-                // Calculate BMI if height & weight present
                 if (demo.height > 0 && demo.weight > 0) {
                     data.bmi = (demo.weight / ((demo.height / 100) ** 2));
-                } else {
-                    data.bmi = parseFloat(getFieldValue('bmi')) || 0;
-                }
+                } else { data.bmi = parseFloat(getFieldValue('bmi')) || 0; }
+                const goals = getGoals();
+                data.pain_goal = goals.pain;
+                data.mobility_goal = goals.mobility;
+                data.energy_goal = goals.energy;
+                data.glucose = getFieldValue('glucose') || 0;
+                data.fev1 = getFieldValue('fev1') || 0;
                 return data;
             }
 
@@ -1238,9 +1178,8 @@
                 if (!data) return;
                 const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 fields.forEach(f => { if (data[f.id] !== undefined) setFieldValue(f.id, data[f.id]); });
-                if (data.bmi) setFieldValue('bmi', data.bmi);
-                // Demographics
                 setDemographics(data);
+                setGoals(data);
             }
 
             function clearFormValues() {
@@ -1250,10 +1189,13 @@
                 document.getElementById('height').value = '';
                 document.getElementById('weight').value = '';
                 document.getElementById('gender').value = 'female';
+                document.getElementById('goal_pain').value = 2;
+                document.getElementById('goal_mobility').value = 8;
+                document.getElementById('goal_energy').value = 6;
             }
 
             function generateEncounterId() {
-                return 'ENC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
+                return 'BRAVO' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
             }
 
             function buildForm() {
@@ -1271,114 +1213,155 @@
                 formFields.innerHTML = html;
             }
 
-            // ---------- COMPUTE FUNCTIONALITY INDEX ----------
-            function computeFunctionality(data) {
+            // ---------- CARE INDEX ----------
+            function computeCareIndex(data) {
                 const n = (v) => parseFloat(v) || 0;
                 const pain = n(data.pain);
                 const mobility = n(data.mobility);
                 const fatigue = n(data.fatigue);
                 const func = n(data.function);
-                const ef = n(data.ef);
-                const hb = n(data.hb);
-                const albumin = n(data.albumin);
+                const sleep = n(data.sleep);
+                const glucose = n(data.glucose);
+                const fev1 = n(data.fev1);
 
                 const painScore = Math.max(0, 10 - pain);
                 const fatigueScore = Math.max(0, 10 - fatigue);
-                const mobilityScore = mobility;
                 const funcScore = func;
-                const efScore = ef > 0 ? Math.min(100, ef) / 10 : 5;
-                const hbScore = hb > 0 ? Math.min(160, hb) / 16 : 5;
-                const albScore = albumin > 0 ? Math.min(50, albumin) / 5 : 5;
-
-                const raw = (painScore + fatigueScore + mobilityScore + funcScore + efScore + hbScore + albScore) / 7;
+                const sleepScore = Math.min(10, sleep / 8 * 10);
+                const mobilityScore = mobility;
+                let glucoseScore = 10;
+                if (glucose > 0) {
+                    if (glucose < 70) glucoseScore = Math.max(0, 10 - (70 - glucose) / 7);
+                    else if (glucose > 100) glucoseScore = Math.max(0, 10 - (glucose - 100) / 10);
+                }
+                let fev1Score = 10;
+                if (fev1 > 0) {
+                    fev1Score = Math.min(10, (fev1 / 3.0) * 10);
+                }
+                const raw = (painScore + mobilityScore + fatigueScore + funcScore + sleepScore + glucoseScore + fev1Score) / 7;
                 const index = Math.min(100, Math.round(raw * 2));
                 return index;
             }
 
+            // ---------- TIPS ----------
+            function generateCareTips(data, goals) {
+                const n = (v) => parseFloat(v) || 0;
+                const pain = n(data.pain);
+                const mobility = n(data.mobility);
+                const fatigue = n(data.fatigue);
+                const func = n(data.function);
+                const sleep = n(data.sleep);
+                const glucose = n(data.glucose);
+                const fev1 = n(data.fev1);
+
+                const tips = [];
+                if (pain > goals.pain + 1) tips.push('🔴 Pain above goal. Consider rest, heat/cold, or prescribed relief.');
+                else if (pain > goals.pain) tips.push('🟡 Pain slightly above goal. Gentle stretching may help.');
+                else tips.push('✅ Pain on track.');
+                if (mobility < goals.mobility - 1) tips.push('🔴 Mobility below goal. Try gentle range‑of‑motion exercises.');
+                else if (mobility < goals.mobility) tips.push('🟡 Mobility slightly below goal. A short walk could help.');
+                else tips.push('✅ Good mobility!');
+                if (fatigue < goals.energy - 1) tips.push('🔴 Fatigue high. Prioritise rest and conserve energy.');
+                else if (fatigue < goals.energy) tips.push('🟡 Fatigue moderate. Plan short bursts of activity.');
+                else tips.push('✅ Energy level is good.');
+                if (sleep < 5) tips.push('🟡 Sleep short. Try a relaxing bedtime routine.');
+                else if (sleep > 9) tips.push('🟡 Long sleep. Discuss if persistent.');
+                else tips.push('✅ Sleep duration optimal.');
+                if (func < 4) tips.push('💙 Function limited. Consider OT/PT review.');
+                if (glucose > 0) {
+                    if (glucose > 140) tips.push('🔴 Glucose elevated (>140). Monitor and discuss with care team.');
+                    else if (glucose > 110) tips.push('🟡 Glucose slightly elevated. Review diet and activity.');
+                    else if (glucose < 70) tips.push('🟡 Glucose low (<70). Have a small snack if symptomatic.');
+                    else tips.push('✅ Glucose within normal range.');
+                }
+                if (fev1 > 0) {
+                    if (fev1 < 1.0) tips.push('🔴 FEV1 very low (<1.0L). Urgent respiratory review recommended.');
+                    else if (fev1 < 1.5) tips.push('🟡 FEV1 reduced. Breathing exercises and review with physio.');
+                    else if (fev1 < 2.0) tips.push('🟡 FEV1 moderate. Continue respiratory exercises.');
+                    else tips.push('✅ FEV1 good. Maintain respiratory fitness.');
+                }
+                if (tips.length === 0) tips.push('✅ All markers on track! Keep it up.');
+                return tips;
+            }
+
             // ---------- RENDER ----------
-            function renderRecommendations(data) {
+            function renderInsights(data) {
                 if (!data || Object.keys(data).length === 0) {
                     riskContainer.innerHTML =
-                        `<div style="color:#6f7d8f; padding:12px 0; text-align:center; font-size:0.85rem;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>`;
+                        `<div style="color:#6f7d8f; padding:8px 0; text-align:center; font-size:0.7rem;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>`;
                     compositeScore.textContent = '—';
                     aiInsight.innerHTML =
                         `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
                     return;
                 }
 
-                const age = data.age || 0;
-                const gender = data.gender || 'female';
-                const index = computeFunctionality(data);
-                const { recommendations, icfDomains } = generateRecommendations(data, currentProfile, age, gender);
+                const index = computeCareIndex(data);
+                const goals = getGoals();
+                const tips = generateCareTips(data, goals);
 
-                // Build risk/ICF summary
                 let html = '<div class="risk-summary">';
                 const items = [
-                    { label: 'Pain', val: parseFloat(data.pain) || 0, max: 10, invert: true },
-                    { label: 'Mobility', val: parseFloat(data.mobility) || 0, max: 10 },
-                    { label: 'Fatigue', val: parseFloat(data.fatigue) || 0, max: 10, invert: true },
-                    { label: 'Function', val: parseFloat(data.function) || 0, max: 10 },
+                    { label: 'Pain', val: parseFloat(data.pain) || 0, invert: true },
+                    { label: 'Mobility', val: parseFloat(data.mobility) || 0 },
+                    { label: 'Fatigue', val: parseFloat(data.fatigue) || 0, invert: true },
+                    { label: 'Function', val: parseFloat(data.function) || 0 },
+                    { label: 'Glucose', val: parseFloat(data.glucose) || 0, glucose: true },
+                    { label: 'FEV1', val: parseFloat(data.fev1) || 0, fev1: true },
                 ];
                 items.forEach(item => {
-                    const val = item.val;
+                    let val = item.val;
                     let cls = 'risk-low';
-                    let status = 'Good';
-                    if (item.invert) {
+                    let status = '✅';
+                    if (item.glucose) {
+                        if (val > 140) { cls = 'risk-high';
+                            status = '⬆️'; } else if (val > 110) { cls = 'risk-moderate';
+                            status = '🔶'; } else if (val > 0) { cls = 'risk-low';
+                            status = '✅'; } else { status = '—'; }
+                    } else if (item.fev1) {
+                        if (val > 0 && val < 1.0) { cls = 'risk-high';
+                            status = '⬇️'; } else if (val < 1.5) { cls = 'risk-moderate';
+                            status = '🔶'; } else if (val > 0) { cls = 'risk-low';
+                            status = '✅'; } else { status = '—'; }
+                    } else if (item.invert) {
                         if (val > 5) { cls = 'risk-high';
-                            status = 'Severe'; } else if (val > 2) { cls = 'risk-moderate';
-                            status = 'Moderate'; } else { cls = 'risk-low';
-                            status = 'Mild'; }
+                            status = '⚠️'; } else if (val > 2) { cls = 'risk-moderate';
+                            status = '🔶'; } else if (val >= 0) { cls = 'risk-low';
+                            status = '✅'; }
                     } else {
                         if (val < 4) { cls = 'risk-high';
-                            status = 'Limited'; } else if (val < 7) { cls = 'risk-moderate';
-                            status = 'Moderate'; } else { cls = 'risk-low';
-                            status = 'Good'; }
+                            status = '⚠️'; } else if (val < 7) { cls = 'risk-moderate';
+                            status = '🔶'; } else if (val >= 0) { cls = 'risk-low';
+                            status = '✅'; }
                     }
+                    if (val === 0 && !item.glucose && !item.fev1) status = '—';
                     html +=
                         `<div class="risk-item"><span>${item.label}</span><span class="risk-badge ${cls}">${status}</span></div>`;
                 });
                 html += '</div>';
 
-                // ICF domains
-                html += `<div class="icf-domains">`;
-                const domainLabels = {
-                    body: 'Body Functions',
-                    activity: 'Activities',
-                    participation: 'Participation',
-                    environment: 'Environmental Factors'
-                };
-                for (let key in icfDomains) {
-                    const items2 = icfDomains[key];
-                    if (items2.length === 0) continue;
-                    const icon = key === 'body' ? 'walking' : key === 'activity' ? 'user' : key === 'participation' ?
-                        'users' : 'home';
-                    html +=
-                        `<div class="domain"><i class="fas fa-${icon}"></i> <strong>${domainLabels[key]}:</strong> ${items2.join('; ')}</div>`;
-                }
-                html += '</div>';
+                html += `<div style="font-size:0.6rem; background:#f8fafc; padding:3px 8px; border-radius:6px; margin:3px 0;">
+                            <i class="fas fa-bullseye" style="color:#005792;"></i> Goals: Pain ≤${goals.pain} · Mobility ≥${goals.mobility} · Energy ≥${goals.energy}
+                         </div>`;
 
                 riskContainer.innerHTML = html;
                 compositeScore.textContent = index;
 
-                // AI insights (recommendations) with bullet list
-                let recText = recommendations.map(r => `<li>${r}</li>`).join('');
-                aiInsight.innerHTML = `<i class="fas fa-robot"></i> <ul>${recText}</ul>`;
+                let tipText = tips.map(t => `<li>${t}</li>`).join('');
+                aiInsight.innerHTML = `<i class="fas fa-robot"></i> <ul>${tipText}</ul>`;
             }
 
-            // ---------- TREND CHART ----------
+            // ---------- CHART ----------
             function updateChart(patientData) {
                 const sorted = [...patientData].sort((a, b) => new Date(a.date) - new Date(b.date));
                 if (chartInstance) { chartInstance.destroy();
                     chartInstance = null; }
-                if (sorted.length < 2) {
+                if (sorted.length < 1) {
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     return;
                 }
-
                 const labels = sorted.map(r => r.date);
-                const indices = sorted.map(r => computeFunctionality(r));
-
+                const indices = sorted.map(r => computeCareIndex(r));
                 const ctx = canvas.getContext('2d');
                 chartInstance = new Chart(ctx, {
                     type: 'line',
@@ -1392,66 +1375,20 @@
                             fill: true,
                             tension: 0.3,
                             pointBackgroundColor: '#005792',
-                            pointRadius: 3,
+                            pointRadius: 2,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { callbacks: { label: (ctx) => `Index: ${ctx.parsed.y}` } }
-                        },
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) =>
+                                    `Index: ${ctx.parsed.y}` } } },
                         scales: {
                             y: { beginAtZero: true, max: 100, grid: { color: '#e9edf2' } },
-                            x: { grid: { display: false }, ticks: { font: { size: 8 } } }
+                            x: { grid: { display: false }, ticks: { font: { size: 6 } } }
                         }
                     }
                 });
-            }
-
-            // ---------- QR ----------
-            function generateQR(data, id) {
-                qrContainer.innerHTML = '';
-                const payload = {
-                    id,
-                    date: new Date().toISOString().split('T')[0],
-                    profile: currentProfile,
-                    gender: data.gender || '—',
-                    age: data.age || '—',
-                    functionality: computeFunctionality(data),
-                    keyValues: {
-                        pain: data.pain,
-                        mobility: data.mobility,
-                        fatigue: data.fatigue,
-                        function: data.function,
-                        bmi: data.bmi,
-                        ef: data.ef,
-                        hb: data.hb,
-                        glucose: data.glucose,
-                        ldl: data.ldl
-                    },
-                    brand: 'virtualcaresolution.de'
-                };
-                const jsonStr = JSON.stringify(payload);
-                new QRCode(qrContainer, {
-                    text: jsonStr,
-                    width: 150,
-                    height: 150,
-                    colorDark: '#005792',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-                qrContainer.dataset.qrData = jsonStr;
-            }
-
-            function downloadQR() {
-                const canvas = qrContainer.querySelector('canvas');
-                if (!canvas) return alert('No QR code.');
-                const link = document.createElement('a');
-                link.download = `QR_${currentEncounterId || 'encounter'}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
             }
 
             // ---------- SAVE ----------
@@ -1468,8 +1405,7 @@
 
                 currentEncounterId = id;
                 encounterNumberSpan.textContent = id.slice(-4);
-                renderRecommendations(data);
-                generateQR(data, id);
+                renderInsights(data);
                 renderHistory();
                 updateChart(encounters);
             }
@@ -1478,16 +1414,15 @@
             function renderHistory() {
                 if (encounters.length === 0) {
                     historyBody.innerHTML =
-                        `<tr><td colspan="12" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>`;
+                        `<tr><td colspan="12" style="text-align:center; color:#6f7d8f; font-size:0.65rem;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>`;
                     historyCount.textContent = '0 records';
                     updateChart([]);
                     return;
                 }
-
                 const sorted = [...encounters].sort((a, b) => new Date(b.date) - new Date(a.date));
                 let html = '';
                 sorted.forEach(enc => {
-                    const funcIdx = computeFunctionality(enc);
+                    const idx = computeCareIndex(enc);
                     const pain = parseFloat(enc.pain) || 0,
                         mobility = parseFloat(enc.mobility) || 0;
                     const fatigue = parseFloat(enc.fatigue) || 0,
@@ -1508,7 +1443,7 @@
                             <td>${mobility}</td>
                             <td>${fatigue}</td>
                             <td>${func}</td>
-                            <td><span class="risk-badge ${funcIdx < 30 ? 'risk-low' : funcIdx < 60 ? 'risk-moderate' : 'risk-high'}">${funcIdx}</span></td>
+                            <td><span class="risk-badge ${idx < 40 ? 'risk-high' : idx < 65 ? 'risk-moderate' : 'risk-low'}">${idx}</span></td>
                             <td>
                                 <button class="btn-sm" data-load='${JSON.stringify(enc)}'><i class="fas fa-eye"></i></button>
                                 <button class="btn-sm danger" data-del='${enc.id}'><i class="fas fa-trash-alt"></i></button>
@@ -1524,20 +1459,21 @@
                         const data = JSON.parse(this.dataset.load);
                         setFormData(data);
                         currentProfile = data.profile || 'acute';
-                        profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
+                        document.querySelectorAll('.profile-btn').forEach(b => {
+                            b.classList.toggle('active', b.dataset.profile === currentProfile);
+                        });
                         buildForm();
                         setFormData(data);
-                        renderRecommendations(data);
+                        renderInsights(data);
                         currentEncounterId = data.id;
                         encounterNumberSpan.textContent = data.id.slice(-4);
-                        generateQR(data, data.id);
                     });
                 });
 
                 document.querySelectorAll('[data-del]').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const id = this.dataset.del;
-                        if (!confirm(`Delete encounter ${id}?`)) return;
+                        if (!confirm('Delete this encounter?')) return;
                         encounters = encounters.filter(e => e.id !== id);
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(encounters));
                         renderHistory();
@@ -1545,30 +1481,218 @@
                             currentEncounterId = null;
                             encounterNumberSpan.textContent = '0000';
                             clearFormValues();
-                            renderRecommendations(null);
-                            qrContainer.innerHTML = '';
+                            renderInsights(null);
                         }
                         updateChart(encounters);
                     });
                 });
-
                 updateChart(encounters);
             }
 
-            // ---------- PROFILE SWITCH ----------
+            // ---------- PROFILE ----------
             function switchProfile(profile) {
                 currentProfile = profile;
-                profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === profile));
+                document.querySelectorAll('.profile-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.profile === profile);
+                });
                 buildForm();
                 clearFormValues();
-                renderRecommendations(null);
+                renderInsights(null);
                 compositeScore.textContent = '—';
                 aiInsight.innerHTML =
                     `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
-                qrContainer.innerHTML = '';
                 currentEncounterId = null;
                 encounterNumberSpan.textContent = '0000';
                 renderHistory();
+            }
+
+            // ---------- PDF GENERATION ----------
+            function generatePDFReport() {
+                const latest = encounters.length > 0 ? encounters[encounters.length - 1] : null;
+                if (!latest) {
+                    alert('Please save an encounter first before generating a PDF report.');
+                    return;
+                }
+
+                const dict = i18n[currentLang] || i18n.en;
+                const idx = computeCareIndex(latest);
+                const tips = generateCareTips(latest, getGoals());
+
+                // Get last 5 encounters for trend
+                const last5 = [...encounters].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+                // Build ICF domains summary
+                const icfDomains = [];
+                const pain = parseFloat(latest.pain) || 0;
+                const mobility = parseFloat(latest.mobility) || 0;
+                const fatigue = parseFloat(latest.fatigue) || 0;
+                const func = parseFloat(latest.function) || 0;
+                const glucose = parseFloat(latest.glucose) || 0;
+                const fev1 = parseFloat(latest.fev1) || 0;
+
+                if (pain > 2) icfDomains.push('Pain (b280) – moderate/severe');
+                else icfDomains.push('Pain (b280) – mild/controlled');
+                if (mobility < 7) icfDomains.push('Mobility (d450) – limited');
+                else icfDomains.push('Mobility (d450) – good');
+                if (fatigue > 6) icfDomains.push('Fatigue (b130) – severe');
+                else if (fatigue > 3) icfDomains.push('Fatigue (b130) – moderate');
+                else icfDomains.push('Fatigue (b130) – mild');
+                if (func < 5) icfDomains.push('Activities (d230) – limited');
+                else icfDomains.push('Activities (d230) – good');
+                if (glucose > 110 && glucose < 140) icfDomains.push('Glucose (b540) – prediabetic range');
+                else if (glucose >= 140) icfDomains.push('Glucose (b540) – elevated');
+                else if (glucose > 0) icfDomains.push('Glucose (b540) – within normal range');
+                if (fev1 > 0 && fev1 < 1.5) icfDomains.push('Respiratory function (b440) – reduced');
+                else if (fev1 > 0) icfDomains.push('Respiratory function (b440) – adequate');
+                icfDomains.push('Participation (d920) – community engagement');
+
+                // Build trend table rows
+                let trendRows = '';
+                last5.forEach(enc => {
+                    const i = computeCareIndex(enc);
+                    const p = parseFloat(enc.pain) || 0;
+                    const m = parseFloat(enc.mobility) || 0;
+                    const f = parseFloat(enc.fatigue) || 0;
+                    const fn = parseFloat(enc.function) || 0;
+                    const g = parseFloat(enc.glucose) || 0;
+                    const fe = parseFloat(enc.fev1) || 0;
+                    trendRows += `
+                        <tr>
+                            <td>${enc.date}</td>
+                            <td>${p}</td>
+                            <td>${m}</td>
+                            <td>${f}</td>
+                            <td>${fn}</td>
+                            <td>${g || '—'}</td>
+                            <td>${fe || '—'}</td>
+                            <td><span class="pdf-risk-badge ${i < 40 ? 'pdf-risk-high' : i < 65 ? 'pdf-risk-moderate' : 'pdf-risk-low'}">${i}</span></td>
+                        </tr>
+                    `;
+                });
+
+                // Build tips list
+                let tipsHtml = tips.map(t => `<li>${t}</li>`).join('');
+
+                // Build the report HTML with logo
+                const reportHTML = `
+                    <div class="pdf-report">
+                        <div class="pdf-header">
+                            <a href="https://virtualcaresolution.de" target="_blank" class="pdf-logo">
+                                <span class="logo-v">V</span>
+                                <span class="logo-text">IRTUAL <span>SOLUTIONS</span></span>
+                            </a>
+                            <div class="pdf-title">
+                                ${dict.pdfTitle}
+                                <small>${dict.pdfFooter}</small>
+                            </div>
+                        </div>
+
+                        <div class="pdf-section">
+                            <h4>${dict.pdfPatient}</h4>
+                            <div class="pdf-grid-2">
+                                <div class="item"><span class="label">${dict.pdfGender}</span><span class="value">${latest.gender || '—'}</span></div>
+                                <div class="item"><span class="label">${dict.pdfAge}</span><span class="value">${latest.age || '—'}</span></div>
+                                <div class="item"><span class="label">BMI</span><span class="value">${latest.bmi ? latest.bmi.toFixed(1) : '—'}</span></div>
+                                <div class="item"><span class="label">${dict.pdfDate}</span><span class="value">${new Date().toISOString().split('T')[0]}</span></div>
+                                <div class="item"><span class="label">Profile</span><span class="value">${latest.profile || '—'}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="pdf-section">
+                            <h4>${dict.pdfCurrentReadings}</h4>
+                            <div class="pdf-grid-2">
+                                <div class="item"><span class="label">Pain (NRS 0-10)</span><span class="value">${latest.pain || '—'}</span></div>
+                                <div class="item"><span class="label">Mobility (0-10)</span><span class="value">${latest.mobility || '—'}</span></div>
+                                <div class="item"><span class="label">Fatigue (0-10)</span><span class="value">${latest.fatigue || '—'}</span></div>
+                                <div class="item"><span class="label">Global Function (0-10)</span><span class="value">${latest.function || '—'}</span></div>
+                                <div class="item"><span class="label">Sleep (hrs)</span><span class="value">${latest.sleep || '—'}</span></div>
+                                <div class="item"><span class="label">Heart Rate (bpm)</span><span class="value">${latest.hr || '—'}</span></div>
+                                <div class="item"><span class="label">SBP / DBP (mmHg)</span><span class="value">${latest.sbp || '—'} / ${latest.dbp || '—'}</span></div>
+                                <div class="item"><span class="label">Glucose (mg/dL)</span><span class="value">${latest.glucose || '—'}</span></div>
+                                <div class="item"><span class="label">FEV1 (L)</span><span class="value">${latest.fev1 || '—'}</span></div>
+                                ${latest.comfort ? `<div class="item"><span class="label">Comfort (0-10)</span><span class="value">${latest.comfort}</span></div>` : ''}
+                                ${latest.exercise ? `<div class="item"><span class="label">Exercise (min)</span><span class="value">${latest.exercise}</span></div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="pdf-section">
+                            <h4>${dict.pdfCareIndex}</h4>
+                            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                                <span style="font-size:2rem; font-weight:800; color:#005792;">${idx}</span>
+                                <span class="pdf-risk-badge ${idx < 40 ? 'pdf-risk-high' : idx < 65 ? 'pdf-risk-moderate' : 'pdf-risk-low'}">
+                                    ${idx < 40 ? '⚠️ High Risk' : idx < 65 ? '🔶 Moderate' : '✅ Good'}
+                                </span>
+                                <span style="font-size:0.7rem; color:#4a5b6e;">(0–100, higher is better)</span>
+                            </div>
+                        </div>
+
+                        <div class="pdf-section">
+                            <h4>${dict.pdfIcfDomains}</h4>
+                            <ul style="font-size:0.7rem; margin:0; padding-left:18px; columns:2;">
+                                ${icfDomains.map(d => `<li>${d}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="pdf-section">
+                            <h4>${dict.pdfTips}</h4>
+                            <div class="pdf-tips">
+                                <ul>${tipsHtml}</ul>
+                            </div>
+                        </div>
+
+                        ${last5.length > 0 ? `
+                        <div class="pdf-section">
+                            <h4>${dict.pdfTrend}</h4>
+                            <table class="pdf-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Pain</th>
+                                        <th>Mobility</th>
+                                        <th>Fatigue</th>
+                                        <th>Function</th>
+                                        <th>Glucose</th>
+                                        <th>FEV1</th>
+                                        <th>Index</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${trendRows}</tbody>
+                            </table>
+                        </div>
+                        ` : ''}
+
+                        <div class="pdf-footer">
+                            <a href="https://virtualcaresolution.de" target="_blank">virtualcaresolution.de</a> · ${dict.pdfFooter}
+                        </div>
+                    </div>
+                `;
+
+                // Render the report into the hidden container
+                document.getElementById('pdfReportContent').innerHTML = reportHTML;
+
+                // Generate PDF using html2pdf
+                const element = document.getElementById('pdfReportContent');
+                const opt = {
+                    margin: 0.5,
+                    filename: `MEDFIT_BRAVO_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: 'avoid-all' }
+                };
+
+                pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                pdfBtn.disabled = true;
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF Report';
+                    pdfBtn.disabled = false;
+                }).catch((err) => {
+                    console.error('PDF generation error:', err);
+                    alert('PDF generation failed. Please try again.');
+                    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF Report';
+                    pdfBtn.disabled = false;
+                });
             }
 
             // ---------- I18N ----------
@@ -1580,29 +1704,20 @@
                     const key = el.dataset.i18n;
                     if (dict[key] !== undefined) el.textContent = dict[key];
                 });
-                // Update select options for gender
                 const genderSelect = document.getElementById('gender');
-                const options = genderSelect.options;
-                if (lang === 'ar') {
-                    options[0].text = 'أنثى';
-                    options[1].text = 'ذكر';
-                    options[2].text = 'متنوع';
-                } else if (lang === 'de') {
-                    options[0].text = 'Weiblich';
-                    options[1].text = 'Männlich';
-                    options[2].text = 'Divers';
-                } else if (lang === 'es') {
-                    options[0].text = 'Femenino';
-                    options[1].text = 'Masculino';
-                    options[2].text = 'Diverso';
-                } else {
-                    options[0].text = 'Female';
-                    options[1].text = 'Male';
-                    options[2].text = 'Diverse';
-                }
+                const opts = genderSelect.options;
+                if (lang === 'ar') { opts[0].text = 'أنثى';
+                    opts[1].text = 'ذكر';
+                    opts[2].text = 'متنوع'; } else if (lang === 'de') { opts[0].text = 'Weiblich';
+                    opts[1].text = 'Männlich';
+                    opts[2].text = 'Divers'; } else if (lang === 'es') { opts[0].text = 'Femenino';
+                    opts[1].text = 'Masculino';
+                    opts[2].text = 'Diverso'; } else { opts[0].text = 'Female';
+                    opts[1].text = 'Male';
+                    opts[2].text = 'Diverse'; }
             }
 
-            // ---------- IP FETCH ----------
+            // ---------- IP ----------
             async function fetchIP() {
                 try {
                     const res = await fetch('https://api.ipify.org?format=json');
@@ -1614,20 +1729,29 @@
             // ---------- INIT ----------
             function init() {
                 buildForm();
+
+                document.querySelectorAll('.profile-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const profile = this.dataset.profile;
+                        if (profile !== currentProfile) switchProfile(profile);
+                    });
+                });
+
                 if (encounters.length > 0) {
                     const latest = encounters[encounters.length - 1];
                     setFormData(latest);
                     currentProfile = latest.profile || 'acute';
-                    profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
+                    document.querySelectorAll('.profile-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.profile === currentProfile);
+                    });
                     buildForm();
                     setFormData(latest);
-                    renderRecommendations(latest);
+                    renderInsights(latest);
                     currentEncounterId = latest.id;
                     encounterNumberSpan.textContent = latest.id.slice(-4);
-                    generateQR(latest, latest.id);
                 } else {
                     clearFormValues();
-                    renderRecommendations(null);
+                    renderInsights(null);
                 }
                 renderHistory();
                 fetchIP();
@@ -1636,22 +1760,22 @@
 
                 clearBtn.addEventListener('click', function() {
                     clearFormValues();
-                    renderRecommendations(null);
+                    renderInsights(null);
                     compositeScore.textContent = '—';
                     aiInsight.innerHTML =
                         `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
-                    qrContainer.innerHTML = '';
                     currentEncounterId = null;
                     encounterNumberSpan.textContent = '0000';
                 });
 
-                downloadQrBtn.addEventListener('click', downloadQR);
+                pdfBtn.addEventListener('click', generatePDFReport);
 
-                profileBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const profile = this.dataset.profile;
-                        if (profile !== currentProfile) switchProfile(profile);
-                    });
+                let instrVisible = true;
+                toggleInstrBtn.addEventListener('click', function() {
+                    instrVisible = !instrVisible;
+                    instructions.classList.toggle('collapsed', !instrVisible);
+                    toggleInstrBtn.innerHTML = instrVisible ? '<i class="fas fa-chevron-up"></i>' :
+                        '<i class="fas fa-chevron-down"></i>';
                 });
 
                 langBtns.forEach(btn => {
@@ -1664,7 +1788,11 @@
                 applyLanguage('en');
             }
 
-            init();
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
 
         })();
     </script>
