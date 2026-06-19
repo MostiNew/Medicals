@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEDFIT BRAVO · AI eHealth</title>
+    <title>MEDFIT BRAVO · Rehab & Palliative AI</title>
 
     <!-- ========== DEPENDENCIES ========== -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
@@ -67,13 +65,14 @@
             margin-right: 6px;
         }
         .brand .tagline {
-            font-size: 0.7rem;
-            font-weight: 600;
+            font-size: 0.65rem;
+            font-weight: 700;
             color: #4a5b6e;
             background: #eef2f7;
             padding: 2px 12px;
             border-radius: 30px;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .header-controls {
@@ -200,7 +199,8 @@
             display: flex;
             justify-content: space-between;
         }
-        .form-group input {
+        .form-group input,
+        .form-group select {
             padding: 7px 10px;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
@@ -208,7 +208,8 @@
             background: #fafcfe;
             transition: 0.15s;
         }
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: 2px solid #005792;
             border-color: transparent;
         }
@@ -217,14 +218,13 @@
             color: #6f7d8f;
         }
 
-        .scan-upload {
+        .action-bar {
             display: flex;
-            gap: 10px;
-            margin: 12px 0 10px;
+            gap: 12px;
+            margin: 16px 0 0;
             flex-wrap: wrap;
-            align-items: center;
         }
-        .scan-upload .btn {
+        .action-bar .btn {
             padding: 8px 18px;
             border-radius: 40px;
             border: none;
@@ -258,28 +258,12 @@
         .btn-success:hover {
             background: #1e7e34;
         }
-        .scan-status {
-            font-size: 0.8rem;
-            color: #4a5b6e;
-            align-self: center;
-        }
-        .scan-log {
-            font-size: 0.75rem;
+        .btn-warning {
+            background: #ffc107;
             color: #1e2a3a;
-            background: #f8fafc;
-            padding: 6px 12px;
-            border-radius: 10px;
-            margin-top: 4px;
-            max-height: 80px;
-            overflow-y: auto;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
-            border: 1px solid #e9edf2;
-            display: none;
         }
-        .scan-log.show {
-            display: block;
+        .btn-warning:hover {
+            background: #e0a800;
         }
 
         /* ---------- RISK DISPLAY ---------- */
@@ -367,6 +351,26 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .icf-domains {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            font-size: 0.75rem;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin: 8px 0;
+        }
+        .icf-domains .domain {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .icf-domains .domain i {
+            color: #005792;
+            width: 16px;
         }
 
         /* ---------- HISTORY TABLE ---------- */
@@ -505,6 +509,9 @@
                 align-items: flex-start;
                 gap: 10px;
             }
+            .icf-domains {
+                grid-template-columns: 1fr;
+            }
         }
         @media (max-width: 480px) {
             .brand h1 {
@@ -524,7 +531,7 @@
         <header class="app-header">
             <div class="brand">
                 <h1><i class="fas fa-heartbeat"></i> MEDFIT BRAVO</h1>
-                <span class="tagline"><i class="fas fa-robot"></i> AI · eHealth</span>
+                <span class="tagline"><i class="fas fa-robot"></i> Rehab · Palliative · ICF</span>
             </div>
             <div class="header-controls">
                 <div class="lang-selector" id="langSelector">
@@ -534,9 +541,9 @@
                     <button class="lang-btn" data-lang="ar">AR</button>
                 </div>
                 <div class="profile-selector">
-                    <button class="profile-btn active" data-profile="women"><i class="fas fa-female"></i> Women</button>
-                    <button class="profile-btn" data-profile="men"><i class="fas fa-male"></i> Men</button>
-                    <button class="profile-btn" data-profile="geriatric"><i class="fas fa-user-plus"></i> Geriatric</button>
+                    <button class="profile-btn active" data-profile="acute"><i class="fas fa-bolt"></i> Acute Rehab</button>
+                    <button class="profile-btn" data-profile="preventive"><i class="fas fa-shield-alt"></i> Preventive</button>
+                    <button class="profile-btn" data-profile="palliative"><i class="fas fa-heart"></i> Palliative</button>
                 </div>
                 <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-qrcode"></i> #<span id="encounterNumber">0000</span></span>
             </div>
@@ -544,53 +551,55 @@
 
         <!-- ========== INSTRUCTIONS ========== -->
         <div class="instructions" id="instructions">
-            <div class="step"><span class="num">1</span> <i class="fas fa-camera"></i> <span data-i18n="step1">Scan or enter readings</span></div>
+            <div class="step"><span class="num">1</span> <i class="fas fa-edit"></i> <span data-i18n="step1">Enter patient readings</span></div>
             <div class="step"><span class="num">2</span> <i class="fas fa-save"></i> <span data-i18n="step2">Save encounter</span></div>
-            <div class="step"><span class="num">3</span> <i class="fas fa-chart-pie"></i> <span data-i18n="step3">View risk &amp; AI insights</span></div>
-            <div class="step"><span class="num">4</span> <i class="fas fa-qrcode"></i> <span data-i18n="step4">Download QR or share</span></div>
+            <div class="step"><span class="num">3</span> <i class="fas fa-chart-pie"></i> <span data-i18n="step3">View ICF‑based recommendations</span></div>
+            <div class="step"><span class="num">4</span> <i class="fas fa-qrcode"></i> <span data-i18n="step4">Download QR for care team</span></div>
         </div>
 
         <!-- ========== MAIN GRID ========== -->
         <div class="grid-2">
 
-            <!-- LEFT: INPUT + SCAN -->
+            <!-- LEFT: INPUT -->
             <div class="card">
-                <h3><i class="fas fa-edit"></i> <span data-i18n="enterReadings">Enter Readings</span></h3>
-                <div class="scan-upload">
-                    <input type="file" id="scanInput" accept="image/*" style="display:none;" />
-                    <button class="btn btn-primary" id="scanBtn"><i class="fas fa-camera"></i> <span data-i18n="scanDoc">Scan Document</span></button>
-                    <button class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> <span data-i18n="clear">Clear</span></button>
-                    <span class="scan-status" id="scanStatus"><i class="fas fa-circle" style="color:#28a745; font-size:0.5rem;"></i> <span data-i18n="ready">Ready</span></span>
-                </div>
-                <div class="scan-log" id="scanLog"></div>
+                <h3><i class="fas fa-edit"></i> <span data-i18n="enterReadings">Patient Assessment</span></h3>
 
                 <form id="checkupForm" autocomplete="off">
                     <div class="form-grid" id="formFields">
                         <!-- generated dynamically -->
                     </div>
-                    <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+
+                    <!-- ICF Domains (display only) -->
+                    <div class="icf-domains">
+                        <div class="domain"><i class="fas fa-walking"></i> <span data-i18n="icfBody">Body Functions</span></div>
+                        <div class="domain"><i class="fas fa-user"></i> <span data-i18n="icfActivity">Activities</span></div>
+                        <div class="domain"><i class="fas fa-users"></i> <span data-i18n="icfParticipation">Participation</span></div>
+                        <div class="domain"><i class="fas fa-home"></i> <span data-i18n="icfEnvironment">Environmental Factors</span></div>
+                    </div>
+
+                    <div class="action-bar">
                         <button type="submit" class="btn btn-success" style="flex:1;"><i class="fas fa-save"></i> <span data-i18n="saveEncounter">Save Encounter</span></button>
-                        <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> <span data-i18n="reset">Reset</span></button>
+                        <button type="reset" class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> <span data-i18n="clear">Clear</span></button>
                     </div>
                 </form>
             </div>
 
             <!-- RIGHT: RISK, AI, QR -->
             <div class="card">
-                <h3><i class="fas fa-chart-pie"></i> <span data-i18n="riskInsights">Risk &amp; Insights</span></h3>
+                <h3><i class="fas fa-chart-pie"></i> <span data-i18n="riskInsights">ICF‑Based Recommendations</span></h3>
                 <div id="riskContainer">
-                    <div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see risk scoring.</span></div>
+                    <div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>
                 </div>
                 <div class="composite-box">
-                    <span><i class="fas fa-shield-alt"></i> <span data-i18n="compositeIndex">Composite Risk Index</span></span>
+                    <span><i class="fas fa-shield-alt"></i> <span data-i18n="compositeIndex">Functionality Index</span></span>
                     <span class="composite-score" id="compositeScore">—</span>
                 </div>
                 <div class="ai-insight" id="aiInsight">
-                    <i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>
+                    <i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>
                 </div>
                 <hr style="margin:14px 0; border-color:#e9edf2;" />
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                    <span><i class="fas fa-qrcode"></i> <span data-i18n="encounterQR">Encounter QR</span></span>
+                    <span><i class="fas fa-qrcode"></i> <span data-i18n="encounterQR">Care Plan QR</span></span>
                     <button class="btn-sm" id="downloadQrBtn"><i class="fas fa-download"></i> <span data-i18n="download">Download</span></button>
                 </div>
                 <div class="qr-container">
@@ -610,17 +619,15 @@
                             <th><span data-i18n="date">Date</span></th>
                             <th><span data-i18n="profile">Profile</span></th>
                             <th>BMI</th>
-                            <th>LDL</th>
-                            <th>HDL</th>
-                            <th><span data-i18n="glucose">Glucose</span></th>
-                            <th>SBP</th>
-                            <th>EF</th>
-                            <th><span data-i18n="risk">Risk</span></th>
+                            <th><span data-i18n="pain">Pain (NRS)</span></th>
+                            <th><span data-i18n="mobility">Mobility</span></th>
+                            <th><span data-i18n="fatigue">Fatigue</span></th>
+                            <th><span data-i18n="function">Function</span></th>
                             <th><span data-i18n="action">Action</span></th>
                         </tr>
                     </thead>
                     <tbody id="historyBody">
-                        <tr><td colspan="11" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>
+                        <tr><td colspan="9" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -630,263 +637,315 @@
 
     <!-- ========== FOOTER ========== -->
     <footer class="app-footer">
-        <span class="footer-brand">MEDFIT BRAVO</span> · <span data-i18n="footerText">AI-powered preventive health tracking</span> ·
+        <span class="footer-brand">MEDFIT BRAVO</span> · <span data-i18n="footerText">ICF‑based rehabilitation &amp; palliative care</span> ·
         <a href="https://virtualcaresolution.de" target="_blank">virtualcaresolution.de</a>
         <span style="margin:0 8px;">·</span>
         <span data-i18n="footerIp">Your IP</span>: <span id="ipDisplay">—</span>
+        <span style="margin:0 8px;">·</span>
+        <span data-i18n="whoStandard">WHO‑ICF aligned</span>
     </footer>
 
     <script>
         // ============================================================
-        //  MEDFIT BRAVO – Full Application
-        //  Improved OCR with keyword-based mapping + parsing log
+        //  MEDFIT BRAVO – Rehab / Palliative / ICF‑based
+        //  No OCR – simple, reliable, evidence‑based.
+        //  Aligned with WHO standards and ICF framework.
         // ============================================================
 
         (function() {
             'use strict';
 
-            // ---------- I18N DICTIONARY ----------
+            // ---------- I18N ----------
             const i18n = {
                 en: {
-                    step1: 'Scan or enter readings',
+                    step1: 'Enter patient readings',
                     step2: 'Save encounter',
-                    step3: 'View risk & AI insights',
-                    step4: 'Download QR or share',
-                    enterReadings: 'Enter Readings',
-                    scanDoc: 'Scan Document',
+                    step3: 'View ICF‑based recommendations',
+                    step4: 'Download QR for care team',
+                    enterReadings: 'Patient Assessment',
                     clear: 'Clear',
-                    ready: 'Ready',
                     saveEncounter: 'Save Encounter',
-                    reset: 'Reset',
-                    riskInsights: 'Risk & Insights',
-                    saveToSeeRisk: 'Save an encounter to see risk scoring.',
-                    compositeIndex: 'Composite Risk Index',
-                    aiPlaceholder: 'AI insights will appear after saving.',
-                    encounterQR: 'Encounter QR',
+                    riskInsights: 'ICF‑Based Recommendations',
+                    saveToSeeRisk: 'Save an encounter to see ICF‑based recommendations.',
+                    compositeIndex: 'Functionality Index',
+                    aiPlaceholder: 'Evidence‑based, WHO‑aligned recommendations will appear after saving.',
+                    encounterQR: 'Care Plan QR',
                     download: 'Download',
                     history: 'Encounter History',
                     id: 'ID',
                     date: 'Date',
                     profile: 'Profile',
-                    glucose: 'Glucose',
-                    risk: 'Risk',
+                    pain: 'Pain (NRS)',
+                    mobility: 'Mobility',
+                    fatigue: 'Fatigue',
+                    function: 'Function',
                     action: 'Action',
                     noEncounters: 'No encounters yet.',
-                    footerText: 'AI-powered preventive health tracking',
-                    footerIp: 'Your IP'
+                    footerText: 'ICF‑based rehabilitation & palliative care',
+                    footerIp: 'Your IP',
+                    whoStandard: 'WHO‑ICF aligned',
+                    icfBody: 'Body Functions',
+                    icfActivity: 'Activities',
+                    icfParticipation: 'Participation',
+                    icfEnvironment: 'Environmental Factors',
                 },
                 de: {
-                    step1: 'Scannen oder Werte eingeben',
+                    step1: 'Patientendaten eingeben',
                     step2: 'Termin speichern',
-                    step3: 'Risiko & KI-Einblicke anzeigen',
-                    step4: 'QR herunterladen oder teilen',
-                    enterReadings: 'Werte eingeben',
-                    scanDoc: 'Dokument scannen',
+                    step3: 'ICF‑basierte Empfehlungen anzeigen',
+                    step4: 'QR für das Team herunterladen',
+                    enterReadings: 'Patientenbewertung',
                     clear: 'Löschen',
-                    ready: 'Bereit',
                     saveEncounter: 'Termin speichern',
-                    reset: 'Zurücksetzen',
-                    riskInsights: 'Risiko & Einblicke',
-                    saveToSeeRisk: 'Speichern Sie einen Termin, um das Risiko zu sehen.',
-                    compositeIndex: 'Gesamtrisiko-Index',
-                    aiPlaceholder: 'KI-Einblicke erscheinen nach dem Speichern.',
-                    encounterQR: 'Termin-QR',
+                    riskInsights: 'ICF‑basierte Empfehlungen',
+                    saveToSeeRisk: 'Speichern Sie einen Termin, um ICF‑basierte Empfehlungen zu sehen.',
+                    compositeIndex: 'Funktionalitätsindex',
+                    aiPlaceholder: 'Evidenzbasierte, WHO‑konforme Empfehlungen erscheinen nach dem Speichern.',
+                    encounterQR: 'Behandlungsplan QR',
                     download: 'Herunterladen',
                     history: 'Terminverlauf',
                     id: 'ID',
                     date: 'Datum',
                     profile: 'Profil',
-                    glucose: 'Glukose',
-                    risk: 'Risiko',
+                    pain: 'Schmerz (NRS)',
+                    mobility: 'Mobilität',
+                    fatigue: 'Fatigue',
+                    function: 'Funktion',
                     action: 'Aktion',
                     noEncounters: 'Noch keine Termine.',
-                    footerText: 'KI-gestütztes präventives Gesundheits-Tracking',
-                    footerIp: 'Ihre IP'
+                    footerText: 'ICF‑basierte Rehabilitation & Palliativversorgung',
+                    footerIp: 'Ihre IP',
+                    whoStandard: 'WHO‑ICF konform',
+                    icfBody: 'Körperfunktionen',
+                    icfActivity: 'Aktivitäten',
+                    icfParticipation: 'Partizipation',
+                    icfEnvironment: 'Umweltfaktoren',
                 },
                 es: {
-                    step1: 'Escanear o ingresar lecturas',
+                    step1: 'Ingresar lecturas del paciente',
                     step2: 'Guardar encuentro',
-                    step3: 'Ver riesgo y perspectivas IA',
-                    step4: 'Descargar QR o compartir',
-                    enterReadings: 'Ingresar lecturas',
-                    scanDoc: 'Escanear documento',
+                    step3: 'Ver recomendaciones basadas en ICF',
+                    step4: 'Descargar QR para el equipo',
+                    enterReadings: 'Evaluación del paciente',
                     clear: 'Limpiar',
-                    ready: 'Listo',
                     saveEncounter: 'Guardar encuentro',
-                    reset: 'Reiniciar',
-                    riskInsights: 'Riesgo y perspectivas',
-                    saveToSeeRisk: 'Guarde un encuentro para ver el riesgo.',
-                    compositeIndex: 'Índice de riesgo compuesto',
-                    aiPlaceholder: 'Las perspectivas IA aparecerán después de guardar.',
-                    encounterQR: 'QR del encuentro',
+                    riskInsights: 'Recomendaciones basadas en ICF',
+                    saveToSeeRisk: 'Guarde un encuentro para ver recomendaciones basadas en ICF.',
+                    compositeIndex: 'Índice de funcionalidad',
+                    aiPlaceholder: 'Recomendaciones basadas en evidencia y alineadas con la OMS aparecerán después de guardar.',
+                    encounterQR: 'QR del plan de cuidados',
                     download: 'Descargar',
                     history: 'Historial de encuentros',
                     id: 'ID',
                     date: 'Fecha',
                     profile: 'Perfil',
-                    glucose: 'Glucosa',
-                    risk: 'Riesgo',
+                    pain: 'Dolor (NRS)',
+                    mobility: 'Movilidad',
+                    fatigue: 'Fatiga',
+                    function: 'Función',
                     action: 'Acción',
                     noEncounters: 'Aún no hay encuentros.',
-                    footerText: 'Seguimiento preventivo de salud con IA',
-                    footerIp: 'Su IP'
+                    footerText: 'Rehabilitación y cuidados paliativos basados en ICF',
+                    footerIp: 'Su IP',
+                    whoStandard: 'Alineado con OMS‑ICF',
+                    icfBody: 'Funciones corporales',
+                    icfActivity: 'Actividades',
+                    icfParticipation: 'Participación',
+                    icfEnvironment: 'Factores ambientales',
                 },
                 ar: {
-                    step1: 'مسح أو إدخال القراءات',
+                    step1: 'إدخال قراءات المريض',
                     step2: 'حفظ الزيارة',
-                    step3: 'عرض المخاطر ورؤى الذكاء الاصطناعي',
-                    step4: 'تنزيل QR أو مشاركته',
-                    enterReadings: 'إدخال القراءات',
-                    scanDoc: 'مسح المستند',
+                    step3: 'عرض التوصيات المستندة إلى ICF',
+                    step4: 'تنزيل QR لفريق الرعاية',
+                    enterReadings: 'تقييم المريض',
                     clear: 'مسح',
-                    ready: 'جاهز',
                     saveEncounter: 'حفظ الزيارة',
-                    reset: 'إعادة تعيين',
-                    riskInsights: 'المخاطر والرؤى',
-                    saveToSeeRisk: 'احفظ زيارة لرؤية تقييم المخاطر.',
-                    compositeIndex: 'مؤشر المخاطر المركب',
-                    aiPlaceholder: 'ستظهر رؤى الذكاء الاصطناعي بعد الحفظ.',
-                    encounterQR: 'رمز QR للزيارة',
+                    riskInsights: 'توصيات مبنية على ICF',
+                    saveToSeeRisk: 'احفظ زيارة لرؤية التوصيات المستندة إلى ICF.',
+                    compositeIndex: 'مؤشر الوظائف',
+                    aiPlaceholder: 'ستظهر توصيات قائمة على الأدلة ومتوافقة مع منظمة الصحة العالمية بعد الحفظ.',
+                    encounterQR: 'رمز QR لخطة الرعاية',
                     download: 'تنزيل',
                     history: 'سجل الزيارات',
                     id: 'المعرف',
                     date: 'التاريخ',
                     profile: 'الملف الشخصي',
-                    glucose: 'الجلوكوز',
-                    risk: 'المخاطر',
+                    pain: 'الألم (NRS)',
+                    mobility: 'الحركة',
+                    fatigue: 'الإرهاق',
+                    function: 'الوظيفة',
                     action: 'إجراء',
                     noEncounters: 'لا توجد زيارات بعد.',
-                    footerText: 'تتبع صحي وقائي مدعوم بالذكاء الاصطناعي',
-                    footerIp: 'عنوان IP الخاص بك'
+                    footerText: 'إعادة التأهيل والرعاية التلطيفية القائمة على ICF',
+                    footerIp: 'عنوان IP الخاص بك',
+                    whoStandard: 'متوافق مع منظمة الصحة العالمية-ICF',
+                    icfBody: 'وظائف الجسم',
+                    icfActivity: 'الأنشطة',
+                    icfParticipation: 'المشاركة',
+                    icfEnvironment: 'العوامل البيئية',
                 }
             };
 
             let currentLang = 'en';
 
             // ---------- STORAGE ----------
-            const STORAGE_KEY = 'medfitBRAVO_encounters';
+            const STORAGE_KEY = 'medfitBRAVO_rehab';
             let encounters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let currentProfile = 'women';
+            let currentProfile = 'acute';
             let currentEncounterId = null;
 
             // ---------- FIELD DEFS ----------
             const FIELD_DEFS = {
-                women: [
+                acute: [
                     { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
-                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
-                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
-                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
-                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
-                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
                     { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
                 ],
-                men: [
+                preventive: [
                     { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
-                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
-                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
-                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
-                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
-                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
                     { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
                 ],
-                geriatric: [
+                palliative: [
                     { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
-                    { id: 'bf', label: 'Body Fat', unit: '%', step: '0.1' },
-                    { id: 'waist', label: 'Waist', unit: 'cm', step: '0.5' },
-                    { id: 'chol', label: 'Total Chol', unit: 'mg/dL', step: '1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mg/dL', step: '1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mg/dL', step: '1' },
-                    { id: 'trig', label: 'Trig', unit: 'mg/dL', step: '1' },
-                    { id: 'glucose', label: 'Glucose', unit: 'mg/dL', step: '1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    { id: 'pain', label: 'Pain (NRS 0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'mobility', label: 'Mobility (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'fatigue', label: 'Fatigue (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'function', label: 'Global Function (0‑10)', unit: '0‑10', step: '1', max: 10 },
+                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    { id: 'hr', label: 'Resting HR', unit: 'bpm', step: '1' },
                     { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'imt', label: 'Carotid IMT', unit: 'mm', step: '0.01' },
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
                     { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
+                    { id: 'palliative_comfort', label: 'Comfort Score (0‑10)', unit: '0‑10', step: '1', max: 10 },
                 ]
             };
 
-            // ---------- KEYWORD MAPPING (for OCR) ----------
-            const KEYWORD_MAP = {
-                bmi: ['bmi', 'body mass index'],
-                ldl: ['ldl'],
-                hdl: ['hdl'],
-                glucose: ['glucose', 'blood sugar', 'fasting glucose'],
-                sbp: ['sbp', 'systolic'],
-                dbp: ['dbp', 'diastolic'],
-                hr: ['hr', 'heart rate', 'pulse'],
-                ef: ['ef', 'ejection fraction'],
-                imt: ['imt', 'carotid intima'],
-                chol: ['chol', 'total cholesterol', 'cholesterol'],
-                trig: ['trig', 'triglycerides'],
-                hba1c: ['hba1c', 'a1c', 'hemoglobin a1c'],
-                waist: ['waist', 'waist circumference'],
-                bf: ['body fat', 'fat %'],
-                fev1: ['fev1'],
-                fvc: ['fvc'],
-                // also blood pressure variants
-            };
+            // ---------- WHO / ICF BASED RECOMMENDATIONS ----------
+            function generateRecommendations(data, profile) {
+                const n = (v) => parseFloat(v) || 0;
+                const bmi = n(data.bmi);
+                const pain = n(data.pain);
+                const mobility = n(data.mobility);
+                const fatigue = n(data.fatigue);
+                const func = n(data.function);
+                const ef = n(data.ef);
+                const sbp = n(data.sbp);
+                const hr = n(data.hr);
 
-            // ---------- RISK THRESHOLDS ----------
-            function getThresholds() {
-                return {
-                    bmi: [
-                        { max: 18.4, level: 'moderate', label: 'Underweight', cls: 'risk-moderate' },
-                        { max: 24.9, level: 'low', label: 'Normal', cls: 'risk-low' },
-                        { max: 29.9, level: 'moderate', label: 'Overweight', cls: 'risk-moderate' },
-                        { max: 999, level: 'high', label: 'Obese', cls: 'risk-high' }
-                    ],
-                    ldl: [
-                        { max: 99, level: 'low', label: 'Optimal', cls: 'risk-low' },
-                        { max: 159, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
-                        { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
-                    ],
-                    glucose: [
-                        { max: 99, level: 'low', label: 'Normal', cls: 'risk-low' },
-                        { max: 125, level: 'moderate', label: 'Prediabetes', cls: 'risk-moderate' },
-                        { max: 999, level: 'high', label: 'Diabetes', cls: 'risk-high' }
-                    ],
-                    sbp: [
-                        { max: 119, level: 'low', label: 'Normal', cls: 'risk-low' },
-                        { max: 139, level: 'moderate', label: 'Elevated', cls: 'risk-moderate' },
-                        { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
-                    ],
-                    imt: [
-                        { max: 0.79, level: 'low', label: 'Normal', cls: 'risk-low' },
-                        { max: 0.99, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
-                        { max: 999, level: 'high', label: 'Thickened', cls: 'risk-high' }
-                    ]
-                };
+                let recs = [];
+                let icfDomains = { body: [], activity: [], participation: [], environment: [] };
+
+                // ---- ICF: Body Functions ----
+                if (pain > 5) {
+                    recs.push('🔴 **Pain management**: Consider WHO analgesic ladder – start with paracetamol/NSAIDs, escalate to opioids if needed. (ICF: b280)');
+                    icfDomains.body.push('Pain (b280) – moderate‑severe');
+                } else if (pain > 2) {
+                    recs.push('🟡 **Mild pain**: Regular pain assessment using NRS. Consider physical therapy modalities (TENS, heat/cold). (ICF: b280)');
+                    icfDomains.body.push('Pain (b280) – mild');
+                } else {
+                    recs.push('✅ **Pain well‑controlled**: Continue current management. (ICF: b280)');
+                }
+
+                if (fatigue > 6) {
+                    recs.push('🔴 **Severe fatigue**: Screen for anaemia, thyroid dysfunction, depression. Energy conservation techniques and pacing recommended. (ICF: b130)');
+                    icfDomains.body.push('Fatigue (b130) – severe');
+                } else if (fatigue > 3) {
+                    recs.push('🟡 **Moderate fatigue**: Encourage graded physical activity, sleep hygiene, and nutritional support. (ICF: b130)');
+                    icfDomains.body.push('Fatigue (b130) – moderate');
+                }
+
+                if (bmi > 30) {
+                    recs.push('🔴 **Obesity (BMI ≥30)**: WHO recommends lifestyle interventions – diet, exercise, and behavioural therapy. Consider referral to dietitian. (ICF: b530)');
+                    icfDomains.body.push('Weight (b530) – obesity');
+                } else if (bmi < 18.5) {
+                    recs.push('🔴 **Underweight (BMI <18.5)**: Nutritional support and assessment for underlying causes. (ICF: b530)');
+                    icfDomains.body.push('Weight (b530) – underweight');
+                }
+
+                if (ef < 45) {
+                    recs.push('🔴 **Reduced ejection fraction (<45%)**: Cardiology review. Optimise heart failure therapy (ACE inhibitors, beta‑blockers). Monitor fluid balance. (ICF: b410)');
+                    icfDomains.body.push('Cardiac function (b410) – reduced');
+                } else if (ef < 55) {
+                    recs.push('🟡 **Mildly reduced EF (45‑54%)**: Regular monitoring, lifestyle modifications, and medication review. (ICF: b410)');
+                    icfDomains.body.push('Cardiac function (b410) – mildly reduced');
+                }
+
+                if (sbp > 140) {
+                    recs.push('🔴 **Hypertension (SBP >140)**: WHO guidelines recommend lifestyle changes and antihypertensive therapy if persistent. (ICF: b420)');
+                    icfDomains.body.push('Blood pressure (b420) – elevated');
+                }
+
+                // ---- ICF: Activities ----
+                if (mobility < 4) {
+                    recs.push('🔴 **Severe mobility limitation**: Physical therapy assessment for gait aids, strengthening, and balance training. (ICF: d450, d410)');
+                    icfDomains.activity.push('Mobility (d450) – severe limitation');
+                } else if (mobility < 7) {
+                    recs.push('🟡 **Moderate mobility limitation**: Structured exercise programme – 3‑5x/week strengthening and balance. (ICF: d450)');
+                    icfDomains.activity.push('Mobility (d450) – moderate limitation');
+                } else {
+                    recs.push('✅ **Good mobility**: Maintain with regular physical activity (WHO: 150 min moderate/week). (ICF: d450)');
+                }
+
+                if (func < 4) {
+                    recs.push('🔴 **Severe functional limitation**: Multidisciplinary rehabilitation – OT, PT, and social work involvement. (ICF: d230)');
+                    icfDomains.activity.push('Daily activities (d230) – severe limitation');
+                } else if (func < 7) {
+                    recs.push('🟡 **Moderate functional limitation**: Goal‑setting with patient – focus on ADL independence. (ICF: d230)');
+                    icfDomains.activity.push('Daily activities (d230) – moderate limitation');
+                }
+
+                // ---- ICF: Participation ----
+                if (func < 5 || mobility < 5) {
+                    recs.push('🟡 **Participation restriction**: Assess social support, community mobility, and return‑to‑work/leisure planning. (ICF: d920, d850)');
+                    icfDomains.participation.push('Community participation (d920) – restricted');
+                }
+
+                // ---- ICF: Environmental Factors ----
+                if (profile === 'palliative') {
+                    recs.push('🕊️ **Palliative focus**: WHO recommends early integration of palliative care. Address symptoms, goals of care, and family support. (ICF: e310, e355)');
+                    icfDomains.environment.push('Family support (e310) – essential');
+                }
+
+                if (profile === 'acute') {
+                    recs.push('🏥 **Acute rehabilitation**: WHO recommends early mobilisation (within 24‑48h) for critically ill patients to reduce ICU‑acquired weakness.');
+                    icfDomains.environment.push('Early mobilisation (e580) – indicated');
+                }
+
+                if (profile === 'preventive') {
+                    recs.push('🛡️ **Preventive care**: WHO recommends screening for frailty, falls risk, and osteoporosis in older adults. (ICF: e580)');
+                    icfDomains.environment.push('Preventive screening (e580) – recommended');
+                }
+
+                // Fallback
+                if (recs.length === 0) {
+                    recs.push('✅ All markers within normal ranges. Continue with current care plan and routine monitoring.');
+                }
+
+                return { recommendations: recs, icfDomains };
             }
 
             // ---------- DOM REFS ----------
             const form = document.getElementById('checkupForm');
             const formFields = document.getElementById('formFields');
-            const scanBtn = document.getElementById('scanBtn');
-            const scanInput = document.getElementById('scanInput');
-            const scanStatus = document.getElementById('scanStatus');
-            const scanLog = document.getElementById('scanLog');
             const clearBtn = document.getElementById('clearBtn');
             const riskContainer = document.getElementById('riskContainer');
             const compositeScore = document.getElementById('compositeScore');
@@ -907,7 +966,7 @@
 
             function getFormData() {
                 const data = {};
-                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 fields.forEach(f => data[f.id] = getFieldValue(f.id));
                 data.profile = currentProfile;
                 return data;
@@ -915,12 +974,12 @@
 
             function setFormData(data) {
                 if (!data) return;
-                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 fields.forEach(f => { if (data[f.id] !== undefined) setFieldValue(f.id, data[f.id]); });
             }
 
             function clearFormValues() {
-                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 fields.forEach(f => setFieldValue(f.id, ''));
             }
 
@@ -929,122 +988,103 @@
             }
 
             function buildForm() {
-                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
+                const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.acute;
                 let html = '';
                 fields.forEach(f => {
+                    const maxAttr = f.max ? `max="${f.max}"` : '';
                     html += `
                         <div class="form-group">
                             <label>${f.label} <span class="unit">${f.unit}</span></label>
-                            <input type="number" id="${f.id}" step="${f.step || '1'}" placeholder="—" />
+                            <input type="number" id="${f.id}" step="${f.step || '1'}" ${maxAttr} placeholder="—" />
                         </div>
                     `;
                 });
                 formFields.innerHTML = html;
             }
 
-            // ---------- RISK COMPUTATION ----------
-            function computeRisk(data) {
+            // ---------- COMPUTE FUNCTIONALITY INDEX ----------
+            function computeFunctionality(data) {
                 const n = (v) => parseFloat(v) || 0;
-                const thresholds = getThresholds();
-                const risks = {};
+                const pain = n(data.pain);
+                const mobility = n(data.mobility);
+                const fatigue = n(data.fatigue);
+                const func = n(data.function);
+                const ef = n(data.ef);
 
-                if (n(data.bmi) > 0) {
-                    const val = n(data.bmi);
-                    for (let t of thresholds.bmi) { if (val <= t.max) { risks.bmi = t; break; } }
-                }
-                if (n(data.ldl) > 0) {
-                    const val = n(data.ldl);
-                    for (let t of thresholds.ldl) { if (val <= t.max) { risks.ldl = t; break; } }
-                }
-                if (n(data.hdl) > 0) {
-                    const val = n(data.hdl);
-                    if (val >= 60) risks.hdl = { level: 'low', label: 'Good', cls: 'risk-low' };
-                    else if (val >= 40) risks.hdl = { level: 'moderate', label: 'Moderate', cls: 'risk-moderate' };
-                    else risks.hdl = { level: 'high', label: 'Low', cls: 'risk-high' };
-                }
-                if (n(data.glucose) > 0) {
-                    const val = n(data.glucose);
-                    for (let t of thresholds.glucose) { if (val <= t.max) { risks.glucose = t; break; } }
-                }
-                if (n(data.sbp) > 0) {
-                    const val = n(data.sbp);
-                    for (let t of thresholds.sbp) { if (val <= t.max) { risks.sbp = t; break; } }
-                }
-                if (n(data.ef) > 0) {
-                    const val = n(data.ef);
-                    if (val >= 55) risks.ef = { level: 'low', label: 'Normal', cls: 'risk-low' };
-                    else if (val >= 45) risks.ef = { level: 'moderate', label: 'Mildly reduced', cls: 'risk-moderate' };
-                    else risks.ef = { level: 'high', label: 'Reduced', cls: 'risk-high' };
-                }
-                if (n(data.imt) > 0) {
-                    const val = n(data.imt);
-                    for (let t of thresholds.imt) { if (val <= t.max) { risks.imt = t; break; } }
-                }
+                // Normalise: pain and fatigue are inverted (low = good)
+                const painScore = Math.max(0, 10 - pain);
+                const fatigueScore = Math.max(0, 10 - fatigue);
+                const mobilityScore = mobility;
+                const funcScore = func;
+                const efScore = ef > 0 ? Math.min(100, ef) / 10 : 5;
 
-                let total = 0,
-                    count = 0;
-                for (let key in risks) {
-                    const r = risks[key];
-                    if (r.level === 'low') total += 0;
-                    else if (r.level === 'moderate') total += 1;
-                    else if (r.level === 'high') total += 2;
-                    count++;
-                }
-                const avg = count > 0 ? (total / count) * 50 : 0;
-                const composite = Math.min(100, Math.round(avg));
-                return { risks, composite };
+                const raw = (painScore + fatigueScore + mobilityScore + funcScore + efScore) / 5;
+                const index = Math.min(100, Math.round(raw * 2));
+                return index;
             }
 
             // ---------- RENDER ----------
-            function renderRisk(data) {
+            function renderRecommendations(data) {
                 if (!data || Object.keys(data).length === 0) {
                     riskContainer.innerHTML =
-                        `<div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see risk scoring.</span></div>`;
+                        `<div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see ICF‑based recommendations.</span></div>`;
                     compositeScore.textContent = '—';
                     aiInsight.innerHTML =
-                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                        `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
                     return;
                 }
 
-                const { risks, composite } = computeRisk(data);
+                const index = computeFunctionality(data);
+                const { recommendations, icfDomains } = generateRecommendations(data, currentProfile);
+
+                // Build risk/ICF summary
                 let html = '<div class="risk-summary">';
-                const labelMap = { bmi: 'BMI', ldl: 'LDL', hdl: 'HDL', glucose: 'Glucose', sbp: 'SBP', ef: 'EF', imt: 'IMT' };
-                for (let key in risks) {
-                    const r = risks[key];
-                    const display = labelMap[key] || key.toUpperCase();
-                    html +=
-                        `<div class="risk-item"><span>${display}</span><span class="risk-badge ${r.cls}">${r.label}</span></div>`;
+                const items = [
+                    { label: 'Pain', val: parseFloat(data.pain) || 0, max: 10 },
+                    { label: 'Mobility', val: parseFloat(data.mobility) || 0, max: 10 },
+                    { label: 'Fatigue', val: parseFloat(data.fatigue) || 0, max: 10 },
+                    { label: 'Function', val: parseFloat(data.function) || 0, max: 10 },
+                ];
+                items.forEach(item => {
+                    const val = item.val;
+                    let cls = 'risk-low';
+                    let status = 'Good';
+                    if (item.label === 'Pain') {
+                        if (val > 5) { cls = 'risk-high';
+                            status = 'Severe'; } else if (val > 2) { cls = 'risk-moderate';
+                            status = 'Moderate'; } else { cls = 'risk-low';
+                            status = 'Mild'; }
+                    } else {
+                        if (val < 4) { cls = 'risk-high';
+                            status = 'Limited'; } else if (val < 7) { cls = 'risk-moderate';
+                            status = 'Moderate'; } else { cls = 'risk-low';
+                            status = 'Good'; }
+                    }
+                    html += `<div class="risk-item"><span>${item.label}</span><span class="risk-badge ${cls}">${status}</span></div>`;
+                });
+                html += '</div>';
+
+                // ICF domains
+                html += `<div class="icf-domains">`;
+                const domainLabels = {
+                    body: 'Body Functions',
+                    activity: 'Activities',
+                    participation: 'Participation',
+                    environment: 'Environmental Factors'
+                };
+                for (let key in icfDomains) {
+                    const items2 = icfDomains[key];
+                    if (items2.length === 0) continue;
+                    html += `<div class="domain"><i class="fas fa-${key === 'body' ? 'walking' : key === 'activity' ? 'user' : key === 'participation' ? 'users' : 'home'}"></i> <strong>${domainLabels[key]}:</strong> ${items2.join('; ')}</div>`;
                 }
                 html += '</div>';
+
                 riskContainer.innerHTML = html;
-                compositeScore.textContent = composite;
+                compositeScore.textContent = index;
 
-                let insight = '';
-                const n = (v) => parseFloat(v) || 0;
-                const bmi = n(data.bmi),
-                    ldl = n(data.ldl),
-                    hdl = n(data.hdl),
-                    glu = n(data.glucose),
-                    sbp = n(data.sbp),
-                    ef = n(data.ef);
-
-                if (bmi > 30) insight += '⚠️ BMI indicates obesity – consider lifestyle modifications. ';
-                else if (bmi > 25) insight += '⚖️ Overweight – regular exercise and balanced diet recommended. ';
-                if (ldl > 160) insight += '🍔 High LDL – reduce saturated fats and consider statin therapy. ';
-                else if (ldl > 130) insight += '🍎 LDL borderline – monitor diet and increase fiber. ';
-                if (hdl < 40) insight += '💔 Low HDL – increase physical activity and healthy fats. ';
-                if (glu > 125) insight += '🍬 Elevated glucose – consult for diabetes management. ';
-                else if (glu > 100) insight += '🍭 Prediabetic range – reduce sugar intake. ';
-                if (sbp > 140) insight += '❤️ High blood pressure – regular monitoring and low‑salt diet. ';
-                if (ef < 55) insight += '💓 Reduced ejection fraction – cardiology follow‑up advised. ';
-                if (insight === '') insight = '✅ All markers are within low‑risk ranges. Keep up the healthy habits!';
-
-                if (currentProfile === 'women') insight +=
-                    ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
-                else if (currentProfile === 'geriatric') insight +=
-                    ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
-
-                aiInsight.innerHTML = `<i class="fas fa-robot"></i> ${insight}`;
+                // AI insights (recommendations)
+                let recText = recommendations.join('<br>• ');
+                aiInsight.innerHTML = `<i class="fas fa-robot"></i> <div>• ${recText}</div>`;
             }
 
             // ---------- QR ----------
@@ -1054,9 +1094,15 @@
                     id,
                     date: new Date().toISOString().split('T')[0],
                     profile: currentProfile,
-                    composite: computeRisk(data).composite,
-                    keyValues: { bmi: data.bmi, ldl: data.ldl, hdl: data.hdl, glucose: data.glucose, sbp: data.sbp,
-                        ef: data.ef }
+                    functionality: computeFunctionality(data),
+                    keyValues: {
+                        pain: data.pain,
+                        mobility: data.mobility,
+                        fatigue: data.fatigue,
+                        function: data.function,
+                        bmi: data.bmi,
+                        ef: data.ef
+                    }
                 };
                 const jsonStr = JSON.stringify(payload);
                 new QRCode(qrContainer, {
@@ -1093,7 +1139,7 @@
 
                 currentEncounterId = id;
                 encounterNumberSpan.textContent = id.slice(-4);
-                renderRisk(data);
+                renderRecommendations(data);
                 generateQR(data, id);
                 renderHistory();
             }
@@ -1102,7 +1148,7 @@
             function renderHistory() {
                 if (encounters.length === 0) {
                     historyBody.innerHTML =
-                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>`;
+                        `<tr><td colspan="9" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>`;
                     historyCount.textContent = '0 records';
                     return;
                 }
@@ -1110,13 +1156,12 @@
                 const sorted = [...encounters].sort((a, b) => new Date(b.date) - new Date(a.date));
                 let html = '';
                 sorted.forEach(enc => {
-                    const { composite } = computeRisk(enc);
-                    const bmi = parseFloat(enc.bmi) || 0,
-                        ldl = parseFloat(enc.ldl) || 0,
-                        hdl = parseFloat(enc.hdl) || 0;
-                    const glu = parseFloat(enc.glucose) || 0,
-                        sbp = parseFloat(enc.sbp) || 0,
-                        ef = parseFloat(enc.ef) || 0;
+                    const funcIdx = computeFunctionality(enc);
+                    const pain = parseFloat(enc.pain) || 0,
+                        mobility = parseFloat(enc.mobility) || 0;
+                    const fatigue = parseFloat(enc.fatigue) || 0,
+                        func = parseFloat(enc.function) || 0;
+                    const bmi = parseFloat(enc.bmi) || 0;
 
                     html += `
                         <tr>
@@ -1124,12 +1169,10 @@
                             <td>${enc.date}</td>
                             <td>${enc.profile}</td>
                             <td>${bmi.toFixed(1)}</td>
-                            <td>${ldl}</td>
-                            <td>${hdl}</td>
-                            <td>${glu}</td>
-                            <td>${sbp}</td>
-                            <td>${ef}</td>
-                            <td><span class="risk-badge ${composite < 30 ? 'risk-low' : composite < 60 ? 'risk-moderate' : 'risk-high'}">${composite}</span></td>
+                            <td>${pain}</td>
+                            <td>${mobility}</td>
+                            <td>${fatigue}</td>
+                            <td>${func}</td>
                             <td>
                                 <button class="btn-sm" data-load='${JSON.stringify(enc)}'><i class="fas fa-eye"></i></button>
                                 <button class="btn-sm danger" data-del='${enc.id}'><i class="fas fa-trash-alt"></i></button>
@@ -1144,11 +1187,11 @@
                     btn.addEventListener('click', function() {
                         const data = JSON.parse(this.dataset.load);
                         setFormData(data);
-                        currentProfile = data.profile || 'women';
+                        currentProfile = data.profile || 'acute';
                         profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
                         buildForm();
                         setFormData(data);
-                        renderRisk(data);
+                        renderRecommendations(data);
                         currentEncounterId = data.id;
                         encounterNumberSpan.textContent = data.id.slice(-4);
                         generateQR(data, data.id);
@@ -1166,94 +1209,11 @@
                             currentEncounterId = null;
                             encounterNumberSpan.textContent = '0000';
                             clearFormValues();
-                            renderRisk(null);
+                            renderRecommendations(null);
                             qrContainer.innerHTML = '';
                         }
                     });
                 });
-            }
-
-            // ---------- IMPROVED OCR ----------
-            async function performOCR(file) {
-                scanLog.classList.remove('show');
-                scanLog.textContent = '';
-                scanStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Scanning...`;
-
-                try {
-                    const result = await Tesseract.recognize(file, 'eng', {
-                        logger: m => {
-                            if (m.status === 'recognizing text') {
-                                scanStatus.textContent = `Scanning ${Math.round(m.progress * 100)}%`;
-                            }
-                        }
-                    });
-
-                    const text = result.data.text;
-                    console.log('OCR raw text:', text);
-
-                    // Build a mapping: keyword → value
-                    const found = {};
-                    const logLines = [];
-
-                    // For each field, check if any of its keywords appear in the text
-                    for (let fieldId in KEYWORD_MAP) {
-                        const keywords = KEYWORD_MAP[fieldId];
-                        for (let kw of keywords) {
-                            // Case-insensitive search for keyword followed by a number
-                            const regex = new RegExp(`${kw}\\s*[=:;]?\\s*(\\d{1,4}(?:\\.\\d{1,2})?)`, 'i');
-                            const match = text.match(regex);
-                            if (match) {
-                                const value = parseFloat(match[1]);
-                                if (!isNaN(value) && value > 0) {
-                                    found[fieldId] = value;
-                                    logLines.push(`✅ ${fieldId.toUpperCase()} = ${value} (matched "${kw}")`);
-                                    break; // stop checking other keywords for this field
-                                }
-                            }
-                        }
-                    }
-
-                    // Also try to extract blood pressure from patterns like "130/80"
-                    const bpMatch = text.match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
-                    if (bpMatch) {
-                        const sys = parseInt(bpMatch[1]);
-                        const dia = parseInt(bpMatch[2]);
-                        if (sys > 0 && dia > 0) {
-                            if (!found.sbp) { found.sbp = sys;
-                                logLines.push(`✅ SBP = ${sys} (from BP pattern)`); }
-                            if (!found.dbp) { found.dbp = dia;
-                                logLines.push(`✅ DBP = ${dia} (from BP pattern)`); }
-                        }
-                    }
-
-                    // Apply found values to form fields
-                    let placed = 0;
-                    for (let fieldId in found) {
-                        const val = found[fieldId];
-                        if (val !== undefined && !isNaN(val) && val > 0) {
-                            setFieldValue(fieldId, val.toString());
-                            placed++;
-                        }
-                    }
-
-                    // Show log
-                    if (logLines.length > 0) {
-                        scanLog.textContent = logLines.join('\n');
-                        scanLog.classList.add('show');
-                        scanStatus.innerHTML = `<i class="fas fa-check-circle" style="color:#28a745;"></i> Placed ${placed} values.`;
-                    } else {
-                        scanStatus.innerHTML =
-                            `<i class="fas fa-exclamation-triangle" style="color:#ffc107;"></i> No known markers found. Try a clearer image.`;
-                        scanLog.textContent = 'No keywords matched. Supported: LDL, HDL, Glucose, SBP, BMI, etc.';
-                        scanLog.classList.add('show');
-                    }
-
-                } catch (err) {
-                    scanStatus.innerHTML = `<i class="fas fa-times-circle" style="color:#dc3545;"></i> OCR failed.`;
-                    scanLog.textContent = 'Error: ' + err.message;
-                    scanLog.classList.add('show');
-                    console.error(err);
-                }
             }
 
             // ---------- PROFILE SWITCH ----------
@@ -1262,10 +1222,10 @@
                 profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === profile));
                 buildForm();
                 clearFormValues();
-                renderRisk(null);
+                renderRecommendations(null);
                 compositeScore.textContent = '—';
                 aiInsight.innerHTML =
-                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
                 qrContainer.innerHTML = '';
                 currentEncounterId = null;
                 encounterNumberSpan.textContent = '0000';
@@ -1298,40 +1258,32 @@
                 if (encounters.length > 0) {
                     const latest = encounters[encounters.length - 1];
                     setFormData(latest);
-                    currentProfile = latest.profile || 'women';
+                    currentProfile = latest.profile || 'acute';
                     profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
                     buildForm();
                     setFormData(latest);
-                    renderRisk(latest);
+                    renderRecommendations(latest);
                     currentEncounterId = latest.id;
                     encounterNumberSpan.textContent = latest.id.slice(-4);
                     generateQR(latest, latest.id);
                 } else {
                     clearFormValues();
-                    renderRisk(null);
+                    renderRecommendations(null);
                 }
                 renderHistory();
                 fetchIP();
 
-                // Events
                 form.addEventListener('submit', saveEncounter);
 
                 clearBtn.addEventListener('click', function() {
                     clearFormValues();
-                    renderRisk(null);
+                    renderRecommendations(null);
                     compositeScore.textContent = '—';
                     aiInsight.innerHTML =
-                        `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                        `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">Evidence‑based, WHO‑aligned recommendations will appear after saving.</span>`;
                     qrContainer.innerHTML = '';
                     currentEncounterId = null;
                     encounterNumberSpan.textContent = '0000';
-                    scanLog.classList.remove('show');
-                });
-
-                scanBtn.addEventListener('click', () => scanInput.click());
-                scanInput.addEventListener('change', function() {
-                    if (this.files && this.files.length > 0) performOCR(this.files[0]);
-                    this.value = '';
                 });
 
                 downloadQrBtn.addEventListener('click', downloadQR);
