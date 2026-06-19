@@ -231,7 +231,6 @@
             font-size: 0.8rem;
         }
 
-        /* ---------- SCROLLABLE FORM (mobile friendly) ---------- */
         .form-scroll {
             max-height: 420px;
             overflow-y: auto;
@@ -914,8 +913,8 @@
 
     <script>
         // ============================================================
-        //  MEDFIT BRAVO – FULL LAB VERSION
-        //  Includes all detailed lab results (Hb, WBC, CRP, ESR, etc.)
+        //  MEDFIT BRAVO – STREAMLINED LAB VERSION
+        //  Focus: Most parsable and practical tests for home/clinic.
         //  Logo: "V" + "IRTUAL SOLUTIONS" (CSS re-creation)
         //  Clickable link to virtualcaresolution.de
         // ============================================================
@@ -1081,48 +1080,42 @@
             let chartInstance = null;
 
             // ============================================================
-            //  FIELD_DEFS – Complete with ALL detailed lab results
+            //  FIELD_DEFS – STREAMLINED, MOST PARSABLE TESTS
+            //  Based on analysis of home/clinic POCT availability.
             // ============================================================
             const FIELD_DEFS = {
                 acute: [
-                    // === FUNCTIONAL SCORES ===
+                    // === FUNCTIONAL SCORES (ICF b280, d450, b130, d230) ===
                     { id: 'pain', label: 'Pain (NRS)', unit: '0‑10', step: '1', max: 10 },
                     { id: 'mobility', label: 'Mobility', unit: '0‑10', step: '1', max: 10 },
                     { id: 'fatigue', label: 'Fatigue', unit: '0‑10', step: '1', max: 10 },
                     { id: 'function', label: 'Global Function', unit: '0‑10', step: '1', max: 10 },
-                    // === VITAL SIGNS ===
+                    // === VITAL SIGNS (ICF b410, b420) ===
                     { id: 'hr', label: 'Heart Rate', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    // === HAEMATOLOGY ===
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    // === INFLAMMATION ===
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
-                    // === RENAL ===
-                    { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
-                    { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    // === NUTRITION ===
-                    { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'prealbumin', label: 'Prealbumin', unit: 'mg/dL', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
-                    // === CARDIAC ===
-                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
-                    { id: 'bnp', label: 'BNP / NT‑proBNP', unit: 'pg/mL', step: '1' },
-                    // === RESPIRATORY ===
-                    { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
-                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    // === METABOLIC ===
+                    // === METABOLIC (ICF b540) – Home POCT ===
                     { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
                     { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    // === LIPIDS (ICF b) – Clinic POCT ===
                     { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
                     { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
                     { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
                     { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
+                    // === RENAL (ICF b610) – Clinic POCT ===
+                    { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
+                    { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
+                    // === NUTRITION / ANAEMIA (ICF b430, b530) – Clinic POCT ===
+                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
+                    { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
+                    // === INFLAMMATION (ICF b) – Clinic POCT ===
+                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
+                    // === CARDIAC (ICF b410) – Clinic POCT ===
+                    { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
+                    { id: 'bnp', label: 'BNP / NT‑proBNP', unit: 'pg/mL', step: '1' },
+                    // === RESPIRATORY (ICF b440) – Home POCT ===
+                    { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
+                    { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
                 ],
                 preventive: [
                     // === FUNCTIONAL SCORES ===
@@ -1134,34 +1127,28 @@
                     { id: 'hr', label: 'Heart Rate', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    // === HAEMATOLOGY ===
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    // === INFLAMMATION ===
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
+                    // === METABOLIC ===
+                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
+                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    // === LIPIDS ===
+                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
+                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
+                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
+                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
                     // === RENAL ===
                     { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
                     { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    // === NUTRITION ===
+                    // === NUTRITION / ANAEMIA ===
+                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
                     { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
+                    // === INFLAMMATION ===
+                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
                     // === CARDIAC ===
                     { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
                     // === RESPIRATORY ===
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
                     { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    // === METABOLIC ===
-                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
-                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
-                    // === BONE ===
+                    // === BONE HEALTH ===
                     { id: 'bmd_t_score', label: 'BMD T‑Score', unit: 'SD', step: '0.1' },
                     // === LIFESTYLE ===
                     { id: 'exercise', label: 'Exercise', unit: 'min/day', step: '5' },
@@ -1176,35 +1163,28 @@
                     { id: 'hr', label: 'Heart Rate', unit: 'bpm', step: '1' },
                     { id: 'sbp', label: 'SBP', unit: 'mmHg', step: '1' },
                     { id: 'dbp', label: 'DBP', unit: 'mmHg', step: '1' },
-                    // === HAEMATOLOGY ===
-                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
-                    { id: 'wbc', label: 'WBC', unit: '×10⁹/L', step: '0.1' },
-                    // === INFLAMMATION ===
-                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
-                    { id: 'esr', label: 'ESR', unit: 'mm/hr', step: '1' },
+                    // === METABOLIC ===
+                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
+                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
+                    // === LIPIDS ===
+                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
+                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
+                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
+                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
                     // === RENAL ===
                     { id: 'creatinine', label: 'Creatinine', unit: 'μmol/L', step: '1' },
                     { id: 'egfr', label: 'eGFR', unit: 'mL/min/1.73m²', step: '1' },
-                    // === NUTRITION ===
+                    // === NUTRITION / ANAEMIA ===
+                    { id: 'hb', label: 'Haemoglobin (Hb)', unit: 'g/dL', step: '0.1' },
                     { id: 'albumin', label: 'Albumin', unit: 'g/L', step: '0.1' },
-                    { id: 'prealbumin', label: 'Prealbumin', unit: 'mg/dL', step: '0.1' },
-                    { id: 'vitd', label: 'Vitamin D', unit: 'nmol/L', step: '1' },
-                    { id: 'ferritin', label: 'Ferritin', unit: 'μg/L', step: '1' },
-                    { id: 'b12', label: 'Vitamin B12', unit: 'pmol/L', step: '1' },
-                    { id: 'folate', label: 'Folate', unit: 'nmol/L', step: '0.1' },
+                    // === INFLAMMATION ===
+                    { id: 'crp', label: 'CRP', unit: 'mg/L', step: '0.1' },
                     // === CARDIAC ===
                     { id: 'ef', label: 'Ejection Fraction', unit: '%', step: '1' },
                     { id: 'bnp', label: 'BNP / NT‑proBNP', unit: 'pg/mL', step: '1' },
                     // === RESPIRATORY ===
                     { id: 'fev1', label: 'FEV1', unit: 'L', step: '0.1' },
                     { id: 'fvc', label: 'FVC', unit: 'L', step: '0.1' },
-                    // === METABOLIC ===
-                    { id: 'glucose', label: 'Fasting Glucose', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hba1c', label: 'HbA1c', unit: '%', step: '0.1' },
-                    { id: 'chol', label: 'Total Cholesterol', unit: 'mmol/L', step: '0.1' },
-                    { id: 'ldl', label: 'LDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'hdl', label: 'HDL', unit: 'mmol/L', step: '0.1' },
-                    { id: 'trig', label: 'Triglycerides', unit: 'mmol/L', step: '0.1' },
                     // === PALLIATIVE SPECIFIC ===
                     { id: 'comfort', label: 'Comfort Score', unit: '0‑10', step: '1', max: 10 },
                 ]
@@ -1330,38 +1310,45 @@
                 const mobility = n(data.mobility);
                 const fatigue = n(data.fatigue);
                 const func = n(data.function);
-                const sleep = n(data.sleep);
                 const glucose = n(data.glucose);
                 const fev1 = n(data.fev1);
                 const hb = n(data.hb);
                 const albumin = n(data.albumin);
+                const crp = n(data.crp);
 
                 const painScore = Math.max(0, 10 - pain);
                 const fatigueScore = Math.max(0, 10 - fatigue);
-                const funcScore = func;
-                const mobilityScore = mobility;
+                const funcScore = Math.min(10, func);
+                const mobilityScore = Math.min(10, mobility);
+
                 let glucoseScore = 10;
                 if (glucose > 0) {
                     if (glucose < 3.9) glucoseScore = Math.max(0, 10 - (3.9 - glucose) / 0.5);
                     else if (glucose > 5.6) glucoseScore = Math.max(0, 10 - (glucose - 5.6) / 2);
                 }
+
                 let fev1Score = 10;
                 if (fev1 > 0) {
                     fev1Score = Math.min(10, (fev1 / 3.0) * 10);
                 }
+
                 let hbScore = 10;
                 if (hb > 0) {
                     if (hb < 120) hbScore = Math.max(0, 10 - (120 - hb) / 12);
                 }
+
                 let albuminScore = 10;
                 if (albumin > 0) {
                     if (albumin < 35) albuminScore = Math.max(0, 10 - (35 - albumin) / 5);
                 }
-                // Sleep score
-                const sleepScore = sleep > 0 ? Math.min(10, sleep / 8 * 10) : 5;
 
-                const raw = (painScore + mobilityScore + fatigueScore + funcScore + sleepScore + glucoseScore + fev1Score +
-                    hbScore + albuminScore) / 9;
+                let crpScore = 10;
+                if (crp > 0) {
+                    if (crp > 10) crpScore = Math.max(0, 10 - (crp - 10) / 10);
+                }
+
+                const raw = (painScore + mobilityScore + fatigueScore + funcScore + glucoseScore + fev1Score + hbScore +
+                    albuminScore + crpScore) / 9;
                 const index = Math.min(100, Math.round(raw * 2));
                 return index;
             }
@@ -1373,13 +1360,13 @@
                 const mobility = n(data.mobility);
                 const fatigue = n(data.fatigue);
                 const func = n(data.function);
-                const sleep = n(data.sleep);
                 const glucose = n(data.glucose);
                 const fev1 = n(data.fev1);
                 const hb = n(data.hb);
                 const albumin = n(data.albumin);
                 const crp = n(data.crp);
                 const egfr = n(data.egfr);
+                const ldl = n(data.ldl);
 
                 const tips = [];
                 if (pain > goals.pain + 1) tips.push('🔴 Pain above goal. Consider rest, heat/cold, or prescribed relief.');
@@ -1391,9 +1378,6 @@
                 if (fatigue < goals.energy - 1) tips.push('🔴 Fatigue high. Prioritise rest and conserve energy.');
                 else if (fatigue < goals.energy) tips.push('🟡 Fatigue moderate. Plan short bursts of activity.');
                 else tips.push('✅ Energy level is good.');
-                if (sleep < 5) tips.push('🟡 Sleep short. Try a relaxing bedtime routine.');
-                else if (sleep > 9) tips.push('🟡 Long sleep. Discuss if persistent.');
-                else tips.push('✅ Sleep duration optimal.');
                 if (func < 4) tips.push('💙 Function limited. Consider OT/PT review.');
                 if (glucose > 0) {
                     if (glucose > 7.0) tips.push('🔴 Glucose elevated (>7.0 mmol/L). Monitor and discuss with care team.');
@@ -1418,6 +1402,9 @@
                 }
                 if (egfr > 0 && egfr < 60) {
                     tips.push(`🔴 Reduced eGFR (${egfr}). Monitor renal function, adjust medications.`);
+                }
+                if (ldl > 3.0) {
+                    tips.push(`🟡 Elevated LDL (${ldl} mmol/L). Review diet and consider statin therapy if persistent.`);
                 }
                 if (tips.length === 0) tips.push('✅ All markers on track! Keep it up.');
                 return tips;
@@ -1671,6 +1658,8 @@
                 const hb = parseFloat(latest.hb) || 0;
                 const albumin = parseFloat(latest.albumin) || 0;
                 const egfr = parseFloat(latest.egfr) || 0;
+                const crp = parseFloat(latest.crp) || 0;
+                const ldl = parseFloat(latest.ldl) || 0;
 
                 if (pain > 2) icfDomains.push('Pain (b280) – moderate/severe');
                 else icfDomains.push('Pain (b280) – mild/controlled');
@@ -1681,11 +1670,9 @@
                 else icfDomains.push('Fatigue (b130) – mild');
                 if (func < 5) icfDomains.push('Activities (d230) – limited');
                 else icfDomains.push('Activities (d230) – good');
-                if (glucose > 0) {
-                    if (glucose > 7.0) icfDomains.push('Glucose (b540) – diabetic range');
-                    else if (glucose > 5.6) icfDomains.push('Glucose (b540) – prediabetic range');
-                    else icfDomains.push('Glucose (b540) – within normal range');
-                }
+                if (glucose > 7.0) icfDomains.push('Glucose (b540) – diabetic range');
+                else if (glucose > 5.6) icfDomains.push('Glucose (b540) – prediabetic range');
+                else if (glucose > 0) icfDomains.push('Glucose (b540) – within normal range');
                 if (fev1 > 0) {
                     if (fev1 < 1.0) icfDomains.push('Respiratory function (b440) – severe reduction');
                     else if (fev1 < 1.5) icfDomains.push('Respiratory function (b440) – moderate reduction');
@@ -1694,6 +1681,8 @@
                 if (hb > 0 && hb < 120) icfDomains.push('Haematological (b430) – anaemia');
                 if (albumin > 0 && albumin < 35) icfDomains.push('Nutrition (b530) – at risk');
                 if (egfr > 0 && egfr < 60) icfDomains.push('Renal function (b610) – reduced');
+                if (crp > 10) icfDomains.push('Inflammation (b) – elevated CRP');
+                if (ldl > 3.0) icfDomains.push('Lipids (b) – elevated LDL');
                 icfDomains.push('Participation (d920) – community engagement');
 
                 // Build trend table rows
@@ -1755,34 +1744,26 @@
                                 <div class="item"><span class="label">Mobility (0-10)</span><span class="value">${latest.mobility || '—'}</span></div>
                                 <div class="item"><span class="label">Fatigue (0-10)</span><span class="value">${latest.fatigue || '—'}</span></div>
                                 <div class="item"><span class="label">Global Function (0-10)</span><span class="value">${latest.function || '—'}</span></div>
-                                <div class="item"><span class="label">Sleep (hrs)</span><span class="value">${latest.sleep || '—'}</span></div>
                                 <div class="item"><span class="label">Heart Rate (bpm)</span><span class="value">${latest.hr || '—'}</span></div>
                                 <div class="item"><span class="label">SBP / DBP (mmHg)</span><span class="value">${latest.sbp || '—'} / ${latest.dbp || '—'}</span></div>
-                                <div class="item"><span class="label">Haemoglobin (Hb)</span><span class="value">${latest.hb || '—'} g/dL</span></div>
-                                <div class="item"><span class="label">WBC</span><span class="value">${latest.wbc || '—'} ×10⁹/L</span></div>
-                                <div class="item"><span class="label">CRP</span><span class="value">${latest.crp || '—'} mg/L</span></div>
-                                <div class="item"><span class="label">ESR</span><span class="value">${latest.esr || '—'} mm/hr</span></div>
-                                <div class="item"><span class="label">Creatinine</span><span class="value">${latest.creatinine || '—'} μmol/L</span></div>
-                                <div class="item"><span class="label">eGFR</span><span class="value">${latest.egfr || '—'} mL/min/1.73m²</span></div>
-                                <div class="item"><span class="label">Albumin</span><span class="value">${latest.albumin || '—'} g/L</span></div>
-                                ${latest.prealbumin ? `<div class="item"><span class="label">Prealbumin</span><span class="value">${latest.prealbumin} mg/dL</span></div>` : ''}
-                                <div class="item"><span class="label">Vitamin D</span><span class="value">${latest.vitd || '—'} nmol/L</span></div>
-                                <div class="item"><span class="label">Ferritin</span><span class="value">${latest.ferritin || '—'} μg/L</span></div>
-                                <div class="item"><span class="label">Vitamin B12</span><span class="value">${latest.b12 || '—'} pmol/L</span></div>
-                                <div class="item"><span class="label">Folate</span><span class="value">${latest.folate || '—'} nmol/L</span></div>
-                                <div class="item"><span class="label">Ejection Fraction</span><span class="value">${latest.ef || '—'} %</span></div>
-                                ${latest.bnp ? `<div class="item"><span class="label">BNP/NT‑proBNP</span><span class="value">${latest.bnp} pg/mL</span></div>` : ''}
-                                <div class="item"><span class="label">FEV1</span><span class="value">${latest.fev1 || '—'} L</span></div>
-                                <div class="item"><span class="label">FVC</span><span class="value">${latest.fvc || '—'} L</span></div>
-                                <div class="item"><span class="label">Fasting Glucose</span><span class="value">${latest.glucose || '—'} mmol/L</span></div>
-                                <div class="item"><span class="label">HbA1c</span><span class="value">${latest.hba1c || '—'} %</span></div>
-                                <div class="item"><span class="label">Total Cholesterol</span><span class="value">${latest.chol || '—'} mmol/L</span></div>
-                                <div class="item"><span class="label">LDL</span><span class="value">${latest.ldl || '—'} mmol/L</span></div>
-                                <div class="item"><span class="label">HDL</span><span class="value">${latest.hdl || '—'} mmol/L</span></div>
-                                <div class="item"><span class="label">Triglycerides</span><span class="value">${latest.trig || '—'} mmol/L</span></div>
-                                ${latest.bmd_t_score ? `<div class="item"><span class="label">BMD T‑Score</span><span class="value">${latest.bmd_t_score} SD</span></div>` : ''}
-                                ${latest.exercise ? `<div class="item"><span class="label">Exercise</span><span class="value">${latest.exercise} min/day</span></div>` : ''}
-                                ${latest.comfort ? `<div class="item"><span class="label">Comfort Score</span><span class="value">${latest.comfort} /10</span></div>` : ''}
+                                <div class="item"><span class="label">Fasting Glucose (mmol/L)</span><span class="value">${latest.glucose || '—'}</span></div>
+                                <div class="item"><span class="label">HbA1c (%)</span><span class="value">${latest.hba1c || '—'}</span></div>
+                                <div class="item"><span class="label">Total Cholesterol (mmol/L)</span><span class="value">${latest.chol || '—'}</span></div>
+                                <div class="item"><span class="label">LDL (mmol/L)</span><span class="value">${latest.ldl || '—'}</span></div>
+                                <div class="item"><span class="label">HDL (mmol/L)</span><span class="value">${latest.hdl || '—'}</span></div>
+                                <div class="item"><span class="label">Triglycerides (mmol/L)</span><span class="value">${latest.trig || '—'}</span></div>
+                                <div class="item"><span class="label">Creatinine (μmol/L)</span><span class="value">${latest.creatinine || '—'}</span></div>
+                                <div class="item"><span class="label">eGFR (mL/min/1.73m²)</span><span class="value">${latest.egfr || '—'}</span></div>
+                                <div class="item"><span class="label">Haemoglobin (Hb) (g/dL)</span><span class="value">${latest.hb || '—'}</span></div>
+                                <div class="item"><span class="label">Albumin (g/L)</span><span class="value">${latest.albumin || '—'}</span></div>
+                                <div class="item"><span class="label">CRP (mg/L)</span><span class="value">${latest.crp || '—'}</span></div>
+                                <div class="item"><span class="label">Ejection Fraction (%)</span><span class="value">${latest.ef || '—'}</span></div>
+                                ${latest.bnp ? `<div class="item"><span class="label">BNP/NT‑proBNP (pg/mL)</span><span class="value">${latest.bnp}</span></div>` : ''}
+                                <div class="item"><span class="label">FEV1 (L)</span><span class="value">${latest.fev1 || '—'}</span></div>
+                                <div class="item"><span class="label">FVC (L)</span><span class="value">${latest.fvc || '—'}</span></div>
+                                ${latest.bmd_t_score ? `<div class="item"><span class="label">BMD T‑Score (SD)</span><span class="value">${latest.bmd_t_score}</span></div>` : ''}
+                                ${latest.exercise ? `<div class="item"><span class="label">Exercise (min/day)</span><span class="value">${latest.exercise}</span></div>` : ''}
+                                ${latest.comfort ? `<div class="item"><span class="label">Comfort Score (/10)</span><span class="value">${latest.comfort}</span></div>` : ''}
                             </div>
                         </div>
 
