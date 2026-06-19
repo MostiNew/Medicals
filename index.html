@@ -83,7 +83,6 @@
             gap: 12px;
         }
 
-        /* Language Selector */
         .lang-selector {
             display: flex;
             gap: 4px;
@@ -223,6 +222,7 @@
             gap: 10px;
             margin: 12px 0 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .scan-upload .btn {
             padding: 8px 18px;
@@ -262,6 +262,24 @@
             font-size: 0.8rem;
             color: #4a5b6e;
             align-self: center;
+        }
+        .scan-log {
+            font-size: 0.75rem;
+            color: #1e2a3a;
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 80px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid #e9edf2;
+            display: none;
+        }
+        .scan-log.show {
+            display: block;
         }
 
         /* ---------- RISK DISPLAY ---------- */
@@ -401,7 +419,7 @@
             background: #f5c6cb;
         }
 
-        /* ---------- INSTRUCTIONS (tidy) ---------- */
+        /* ---------- INSTRUCTIONS ---------- */
         .instructions {
             background: white;
             border-radius: 24px;
@@ -509,14 +527,12 @@
                 <span class="tagline"><i class="fas fa-robot"></i> AI · eHealth</span>
             </div>
             <div class="header-controls">
-                <!-- Language Selector -->
                 <div class="lang-selector" id="langSelector">
                     <button class="lang-btn active" data-lang="en">EN</button>
                     <button class="lang-btn" data-lang="de">DE</button>
                     <button class="lang-btn" data-lang="es">ES</button>
                     <button class="lang-btn" data-lang="ar">AR</button>
                 </div>
-                <!-- Profiles -->
                 <div class="profile-selector">
                     <button class="profile-btn active" data-profile="women"><i class="fas fa-female"></i> Women</button>
                     <button class="profile-btn" data-profile="men"><i class="fas fa-male"></i> Men</button>
@@ -526,7 +542,7 @@
             </div>
         </header>
 
-        <!-- ========== INSTRUCTIONS (tidy) ========== -->
+        <!-- ========== INSTRUCTIONS ========== -->
         <div class="instructions" id="instructions">
             <div class="step"><span class="num">1</span> <i class="fas fa-camera"></i> <span data-i18n="step1">Scan or enter readings</span></div>
             <div class="step"><span class="num">2</span> <i class="fas fa-save"></i> <span data-i18n="step2">Save encounter</span></div>
@@ -546,6 +562,7 @@
                     <button class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> <span data-i18n="clear">Clear</span></button>
                     <span class="scan-status" id="scanStatus"><i class="fas fa-circle" style="color:#28a745; font-size:0.5rem;"></i> <span data-i18n="ready">Ready</span></span>
                 </div>
+                <div class="scan-log" id="scanLog"></div>
 
                 <form id="checkupForm" autocomplete="off">
                     <div class="form-grid" id="formFields">
@@ -622,8 +639,7 @@
     <script>
         // ============================================================
         //  MEDFIT BRAVO – Full Application
-        //  i18n: EN/DE/ES/AR | Profiles: Women/Men/Geriatric
-        //  OCR, QR, risk scoring, AI insights, history
+        //  Improved OCR with keyword-based mapping + parsing log
         // ============================================================
 
         (function() {
@@ -811,6 +827,27 @@
                 ]
             };
 
+            // ---------- KEYWORD MAPPING (for OCR) ----------
+            const KEYWORD_MAP = {
+                bmi: ['bmi', 'body mass index'],
+                ldl: ['ldl'],
+                hdl: ['hdl'],
+                glucose: ['glucose', 'blood sugar', 'fasting glucose'],
+                sbp: ['sbp', 'systolic'],
+                dbp: ['dbp', 'diastolic'],
+                hr: ['hr', 'heart rate', 'pulse'],
+                ef: ['ef', 'ejection fraction'],
+                imt: ['imt', 'carotid intima'],
+                chol: ['chol', 'total cholesterol', 'cholesterol'],
+                trig: ['trig', 'triglycerides'],
+                hba1c: ['hba1c', 'a1c', 'hemoglobin a1c'],
+                waist: ['waist', 'waist circumference'],
+                bf: ['body fat', 'fat %'],
+                fev1: ['fev1'],
+                fvc: ['fvc'],
+                // also blood pressure variants
+            };
+
             // ---------- RISK THRESHOLDS ----------
             function getThresholds() {
                 return {
@@ -849,6 +886,7 @@
             const scanBtn = document.getElementById('scanBtn');
             const scanInput = document.getElementById('scanInput');
             const scanStatus = document.getElementById('scanStatus');
+            const scanLog = document.getElementById('scanLog');
             const clearBtn = document.getElementById('clearBtn');
             const riskContainer = document.getElementById('riskContainer');
             const compositeScore = document.getElementById('compositeScore');
@@ -963,7 +1001,8 @@
                     riskContainer.innerHTML =
                         `<div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see risk scoring.</span></div>`;
                     compositeScore.textContent = '—';
-                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                    aiInsight.innerHTML =
+                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                     return;
                 }
 
@@ -973,7 +1012,8 @@
                 for (let key in risks) {
                     const r = risks[key];
                     const display = labelMap[key] || key.toUpperCase();
-                    html += `<div class="risk-item"><span>${display}</span><span class="risk-badge ${r.cls}">${r.label}</span></div>`;
+                    html +=
+                        `<div class="risk-item"><span>${display}</span><span class="risk-badge ${r.cls}">${r.label}</span></div>`;
                 }
                 html += '</div>';
                 riskContainer.innerHTML = html;
@@ -999,8 +1039,10 @@
                 if (ef < 55) insight += '💓 Reduced ejection fraction – cardiology follow‑up advised. ';
                 if (insight === '') insight = '✅ All markers are within low‑risk ranges. Keep up the healthy habits!';
 
-                if (currentProfile === 'women') insight += ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
-                else if (currentProfile === 'geriatric') insight += ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
+                if (currentProfile === 'women') insight +=
+                    ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
+                else if (currentProfile === 'geriatric') insight +=
+                    ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
 
                 aiInsight.innerHTML = `<i class="fas fa-robot"></i> ${insight}`;
             }
@@ -1131,35 +1173,85 @@
                 });
             }
 
-            // ---------- OCR ----------
+            // ---------- IMPROVED OCR ----------
             async function performOCR(file) {
+                scanLog.classList.remove('show');
+                scanLog.textContent = '';
                 scanStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Scanning...`;
+
                 try {
                     const result = await Tesseract.recognize(file, 'eng', {
-                        logger: m => { if (m.status === 'recognizing text') scanStatus.textContent =
-                                `Scanning ${Math.round(m.progress*100)}%`; }
-                    });
-                    const text = result.data.text;
-                    const numbers = text.match(/\b(\d{2,3}(?:\.\d)?)\s*(?:mg\/dL|mmol\/L|cm|kg|mmHg|%)?/g);
-                    if (numbers) {
-                        const vals = numbers.map(s => parseFloat(s.replace(/[^\d.]/g, ''))).filter(v => !isNaN(v) && v > 0);
-                        const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
-                        let idx = 0;
-                        const order = ['bmi', 'ldl', 'hdl', 'glucose', 'sbp', 'dbp', 'hr', 'ef', 'imt', 'chol', 'trig',
-                            'hba1c', 'waist', 'bf', 'fev1', 'fvc'
-                        ];
-                        for (let key of order) {
-                            if (fields.find(f => f.id === key) && idx < vals.length) {
-                                setFieldValue(key, vals[idx].toString());
-                                idx++;
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                scanStatus.textContent = `Scanning ${Math.round(m.progress * 100)}%`;
                             }
                         }
-                        scanStatus.innerHTML = `<i class="fas fa-check-circle" style="color:#28a745;"></i> Extracted ${idx} values.`;
-                    } else {
-                        scanStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffc107;"></i> No numeric values found.`;
+                    });
+
+                    const text = result.data.text;
+                    console.log('OCR raw text:', text);
+
+                    // Build a mapping: keyword → value
+                    const found = {};
+                    const logLines = [];
+
+                    // For each field, check if any of its keywords appear in the text
+                    for (let fieldId in KEYWORD_MAP) {
+                        const keywords = KEYWORD_MAP[fieldId];
+                        for (let kw of keywords) {
+                            // Case-insensitive search for keyword followed by a number
+                            const regex = new RegExp(`${kw}\\s*[=:;]?\\s*(\\d{1,4}(?:\\.\\d{1,2})?)`, 'i');
+                            const match = text.match(regex);
+                            if (match) {
+                                const value = parseFloat(match[1]);
+                                if (!isNaN(value) && value > 0) {
+                                    found[fieldId] = value;
+                                    logLines.push(`✅ ${fieldId.toUpperCase()} = ${value} (matched "${kw}")`);
+                                    break; // stop checking other keywords for this field
+                                }
+                            }
+                        }
                     }
+
+                    // Also try to extract blood pressure from patterns like "130/80"
+                    const bpMatch = text.match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
+                    if (bpMatch) {
+                        const sys = parseInt(bpMatch[1]);
+                        const dia = parseInt(bpMatch[2]);
+                        if (sys > 0 && dia > 0) {
+                            if (!found.sbp) { found.sbp = sys;
+                                logLines.push(`✅ SBP = ${sys} (from BP pattern)`); }
+                            if (!found.dbp) { found.dbp = dia;
+                                logLines.push(`✅ DBP = ${dia} (from BP pattern)`); }
+                        }
+                    }
+
+                    // Apply found values to form fields
+                    let placed = 0;
+                    for (let fieldId in found) {
+                        const val = found[fieldId];
+                        if (val !== undefined && !isNaN(val) && val > 0) {
+                            setFieldValue(fieldId, val.toString());
+                            placed++;
+                        }
+                    }
+
+                    // Show log
+                    if (logLines.length > 0) {
+                        scanLog.textContent = logLines.join('\n');
+                        scanLog.classList.add('show');
+                        scanStatus.innerHTML = `<i class="fas fa-check-circle" style="color:#28a745;"></i> Placed ${placed} values.`;
+                    } else {
+                        scanStatus.innerHTML =
+                            `<i class="fas fa-exclamation-triangle" style="color:#ffc107;"></i> No known markers found. Try a clearer image.`;
+                        scanLog.textContent = 'No keywords matched. Supported: LDL, HDL, Glucose, SBP, BMI, etc.';
+                        scanLog.classList.add('show');
+                    }
+
                 } catch (err) {
                     scanStatus.innerHTML = `<i class="fas fa-times-circle" style="color:#dc3545;"></i> OCR failed.`;
+                    scanLog.textContent = 'Error: ' + err.message;
+                    scanLog.classList.add('show');
                     console.error(err);
                 }
             }
@@ -1172,7 +1264,8 @@
                 clearFormValues();
                 renderRisk(null);
                 compositeScore.textContent = '—';
-                aiInsight.innerHTML = `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                aiInsight.innerHTML =
+                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                 qrContainer.innerHTML = '';
                 currentEncounterId = null;
                 encounterNumberSpan.textContent = '0000';
@@ -1188,7 +1281,6 @@
                     const key = el.dataset.i18n;
                     if (dict[key] !== undefined) el.textContent = dict[key];
                 });
-                // Update dynamic text nodes (placeholders in risk/ai will be re-rendered on next save)
             }
 
             // ---------- IP FETCH ----------
@@ -1229,10 +1321,11 @@
                     renderRisk(null);
                     compositeScore.textContent = '—';
                     aiInsight.innerHTML =
-                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
+                        `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                     qrContainer.innerHTML = '';
                     currentEncounterId = null;
                     encounterNumberSpan.textContent = '0000';
+                    scanLog.classList.remove('show');
                 });
 
                 scanBtn.addEventListener('click', () => scanInput.click());
@@ -1257,7 +1350,6 @@
                     });
                 });
 
-                // initial language
                 applyLanguage('en');
             }
 
