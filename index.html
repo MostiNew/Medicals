@@ -1,22 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEDFIT BRAVO · eHealth AI</title>
+    <title>MEDFIT BRAVO · AI eHealth</title>
 
-    <!-- ========== DEPENDENCIES (CDN) ========== -->
-    <!-- Chart.js for trends -->
+    <!-- ========== DEPENDENCIES ========== -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
-    <!-- Tesseract.js for OCR (document scanning) -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
-    <!-- QRCode.js for QR generation -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     <style>
@@ -31,10 +26,14 @@
             background: #f0f5fa;
             padding: 20px;
             color: #1e2a3a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             max-width: 1500px;
             margin: 0 auto;
+            flex: 1;
         }
 
         /* ---------- HEADER ---------- */
@@ -44,52 +43,111 @@
             align-items: center;
             justify-content: space-between;
             background: white;
-            padding: 16px 24px;
+            padding: 14px 24px;
             border-radius: 24px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-            margin-bottom: 28px;
+            margin-bottom: 24px;
+            gap: 12px;
         }
-        .app-header h1 {
-            font-weight: 700;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand h1 {
+            font-weight: 800;
             font-size: 1.8rem;
-            color: #005792;
+            background: linear-gradient(135deg, #005792, #00b4d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .app-header h1 i {
-            margin-right: 10px;
+        .brand h1 i {
+            -webkit-text-fill-color: #005792;
+            margin-right: 6px;
         }
+        .brand .tagline {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #4a5b6e;
+            background: #eef2f7;
+            padding: 2px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Language Selector */
+        .lang-selector {
+            display: flex;
+            gap: 4px;
+            background: #f0f4fa;
+            padding: 4px;
+            border-radius: 40px;
+        }
+        .lang-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: transparent;
+            color: #4a5b6e;
+            transition: 0.2s;
+        }
+        .lang-btn.active {
+            background: #005792;
+            color: white;
+        }
+        .lang-btn:hover:not(.active) {
+            background: #d9e1ec;
+        }
+
         .profile-selector {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .profile-btn {
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 40px;
             border: 2px solid #d9e1ec;
             background: white;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: 0.2s;
             color: #1e2a3a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .profile-btn.active {
             background: #005792;
             border-color: #005792;
             color: white;
         }
-        .profile-btn:hover {
+        .profile-btn:hover:not(.active) {
             background: #eef2f7;
         }
-        .profile-btn.active:hover {
-            background: #003f6b;
+        .profile-btn i {
+            font-size: 0.9rem;
         }
+
         .encounter-id {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             background: #eef2f7;
-            padding: 6px 14px;
+            padding: 4px 14px;
             border-radius: 30px;
             color: #1e2a3a;
+            white-space: nowrap;
         }
 
         /* ---------- GRID ---------- */
@@ -97,43 +155,45 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
         /* ---------- CARDS ---------- */
         .card {
             background: white;
             border-radius: 24px;
-            padding: 22px 24px;
+            padding: 20px 22px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
             transition: 0.2s;
         }
         .card h3 {
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 10px;
+            color: #1e2a3a;
         }
         .card h3 i {
             color: #005792;
             width: 24px;
+            font-size: 1.2rem;
         }
 
         /* ---------- FORM ---------- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px 16px;
+            gap: 10px 14px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
         }
         .form-group label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -142,7 +202,7 @@
             justify-content: space-between;
         }
         .form-group input {
-            padding: 8px 12px;
+            padding: 7px 10px;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
             font-size: 0.9rem;
@@ -161,55 +221,70 @@
         .scan-upload {
             display: flex;
             gap: 10px;
-            margin: 16px 0 8px;
+            margin: 12px 0 10px;
             flex-wrap: wrap;
         }
         .scan-upload .btn {
-            padding: 10px 18px;
+            padding: 8px 18px;
             border-radius: 40px;
             border: none;
             font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: 0.2s;
-            background: #eef2f7;
-            color: #1e2a3a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .scan-upload .btn-primary {
+        .btn-primary {
             background: #005792;
             color: white;
         }
-        .scan-upload .btn-primary:hover {
+        .btn-primary:hover {
             background: #003f6b;
         }
-        .scan-upload .btn-outline {
+        .btn-outline {
             background: transparent;
             border: 1px solid #d9e1ec;
+            color: #1e2a3a;
         }
-        .scan-upload .btn-outline:hover {
+        .btn-outline:hover {
             background: #eef2f7;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .scan-status {
+            font-size: 0.8rem;
+            color: #4a5b6e;
+            align-self: center;
         }
 
         /* ---------- RISK DISPLAY ---------- */
         .risk-summary {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin: 12px 0;
+            gap: 8px;
+            margin: 10px 0;
         }
         .risk-item {
-            flex: 1 0 140px;
+            flex: 1 0 120px;
             background: #f8fafc;
-            padding: 8px 14px;
-            border-radius: 14px;
+            padding: 6px 12px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .risk-badge {
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 30px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -227,42 +302,50 @@
         }
 
         .composite-box {
-            background: #eef6ff;
+            background: linear-gradient(135deg, #eef6ff, #dbeafe);
             border-radius: 16px;
-            padding: 14px 18px;
+            padding: 12px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         .composite-score {
-            font-size: 2.2rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: #005792;
         }
 
         .ai-insight {
             background: #f0f8ff;
-            border-left: 4px solid #005792;
+            border-left: 4px solid #00b4d8;
             padding: 12px 16px;
             border-radius: 12px;
-            margin: 12px 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .ai-insight i {
+            color: #00b4d8;
+            font-size: 1.2rem;
+            margin-top: 2px;
         }
 
         .qr-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         #qrcode {
             display: inline-block;
-            padding: 8px;
+            padding: 6px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -270,26 +353,26 @@
 
         /* ---------- HISTORY TABLE ---------- */
         .history-section {
-            margin-top: 8px;
+            margin-top: 4px;
         }
         .table-wrap {
             overflow-x: auto;
-            margin-top: 12px;
+            margin-top: 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
         }
         th {
             text-align: left;
-            padding: 10px 8px;
+            padding: 8px 6px;
             background: #f0f4fa;
-            font-weight: 600;
+            font-weight: 700;
             border-bottom: 2px solid #d9e1ec;
         }
         td {
-            padding: 10px 8px;
+            padding: 8px 6px;
             border-bottom: 1px solid #e9edf2;
             vertical-align: middle;
         }
@@ -298,10 +381,10 @@
         }
 
         .btn-sm {
-            padding: 4px 14px;
+            padding: 3px 12px;
             border-radius: 30px;
             border: none;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
             background: #eef2f7;
@@ -318,6 +401,67 @@
             background: #f5c6cb;
         }
 
+        /* ---------- INSTRUCTIONS (tidy) ---------- */
+        .instructions {
+            background: white;
+            border-radius: 24px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 32px;
+        }
+        .instructions .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #1e2a3a;
+        }
+        .instructions .step .num {
+            background: #005792;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        .instructions .step i {
+            color: #00b4d8;
+            font-size: 1.1rem;
+        }
+
+        /* ---------- FOOTER ---------- */
+        .app-footer {
+            margin-top: 32px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #4a5b6e;
+        }
+        .app-footer a {
+            color: #005792;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .app-footer a:hover {
+            text-decoration: underline;
+        }
+        .app-footer .footer-brand {
+            font-weight: 700;
+            color: #1e2a3a;
+        }
+
         /* ---------- RESPONSIVE ---------- */
         @media (max-width: 900px) {
             .grid-2 {
@@ -326,13 +470,30 @@
             .app-header {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 12px;
+                gap: 10px;
+            }
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: center;
             }
             .profile-selector {
                 justify-content: center;
             }
             .form-grid {
                 grid-template-columns: 1fr;
+            }
+            .instructions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .brand h1 {
+                font-size: 1.3rem;
+            }
+            .lang-selector {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -343,57 +504,77 @@
 
         <!-- ========== HEADER ========== -->
         <header class="app-header">
-            <h1><i class="fas fa-heartbeat"></i> MEDFIT BRAVO · AI</h1>
-            <div class="profile-selector">
-                <button class="profile-btn active" data-profile="women"><i class="fas fa-female"></i> Women</button>
-                <button class="profile-btn" data-profile="men"><i class="fas fa-male"></i> Men</button>
-                <button class="profile-btn" data-profile="geriatric"><i class="fas fa-user-plus"></i> Geriatric</button>
+            <div class="brand">
+                <h1><i class="fas fa-heartbeat"></i> MEDFIT BRAVO</h1>
+                <span class="tagline"><i class="fas fa-robot"></i> AI · eHealth</span>
             </div>
-            <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-qrcode"></i> Encounter #<span id="encounterNumber">0000</span></span>
+            <div class="header-controls">
+                <!-- Language Selector -->
+                <div class="lang-selector" id="langSelector">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="de">DE</button>
+                    <button class="lang-btn" data-lang="es">ES</button>
+                    <button class="lang-btn" data-lang="ar">AR</button>
+                </div>
+                <!-- Profiles -->
+                <div class="profile-selector">
+                    <button class="profile-btn active" data-profile="women"><i class="fas fa-female"></i> Women</button>
+                    <button class="profile-btn" data-profile="men"><i class="fas fa-male"></i> Men</button>
+                    <button class="profile-btn" data-profile="geriatric"><i class="fas fa-user-plus"></i> Geriatric</button>
+                </div>
+                <span class="encounter-id" id="encounterIdDisplay"><i class="fas fa-qrcode"></i> #<span id="encounterNumber">0000</span></span>
+            </div>
         </header>
+
+        <!-- ========== INSTRUCTIONS (tidy) ========== -->
+        <div class="instructions" id="instructions">
+            <div class="step"><span class="num">1</span> <i class="fas fa-camera"></i> <span data-i18n="step1">Scan or enter readings</span></div>
+            <div class="step"><span class="num">2</span> <i class="fas fa-save"></i> <span data-i18n="step2">Save encounter</span></div>
+            <div class="step"><span class="num">3</span> <i class="fas fa-chart-pie"></i> <span data-i18n="step3">View risk &amp; AI insights</span></div>
+            <div class="step"><span class="num">4</span> <i class="fas fa-qrcode"></i> <span data-i18n="step4">Download QR or share</span></div>
+        </div>
 
         <!-- ========== MAIN GRID ========== -->
         <div class="grid-2">
 
             <!-- LEFT: INPUT + SCAN -->
             <div class="card">
-                <h3><i class="fas fa-edit"></i> Enter Readings</h3>
-                <!-- Scan upload -->
+                <h3><i class="fas fa-edit"></i> <span data-i18n="enterReadings">Enter Readings</span></h3>
                 <div class="scan-upload">
                     <input type="file" id="scanInput" accept="image/*" style="display:none;" />
-                    <button class="btn btn-primary" id="scanBtn"><i class="fas fa-camera"></i> Scan Document</button>
-                    <button class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> Clear</button>
-                    <span style="font-size:0.8rem; color:#4a5b6e; align-self:center;" id="scanStatus">Ready</span>
+                    <button class="btn btn-primary" id="scanBtn"><i class="fas fa-camera"></i> <span data-i18n="scanDoc">Scan Document</span></button>
+                    <button class="btn btn-outline" id="clearBtn"><i class="fas fa-undo"></i> <span data-i18n="clear">Clear</span></button>
+                    <span class="scan-status" id="scanStatus"><i class="fas fa-circle" style="color:#28a745; font-size:0.5rem;"></i> <span data-i18n="ready">Ready</span></span>
                 </div>
 
                 <form id="checkupForm" autocomplete="off">
                     <div class="form-grid" id="formFields">
-                        <!-- fields generated dynamically by JS -->
+                        <!-- generated dynamically -->
                     </div>
-                    <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
-                        <button type="submit" class="btn btn-primary" style="flex:1;"><i class="fas fa-save"></i> Save Encounter</button>
-                        <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> Reset</button>
+                    <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-success" style="flex:1;"><i class="fas fa-save"></i> <span data-i18n="saveEncounter">Save Encounter</span></button>
+                        <button type="reset" class="btn btn-outline"><i class="fas fa-times"></i> <span data-i18n="reset">Reset</span></button>
                     </div>
                 </form>
             </div>
 
             <!-- RIGHT: RISK, AI, QR -->
             <div class="card">
-                <h3><i class="fas fa-chart-pie"></i> Risk & Insights</h3>
+                <h3><i class="fas fa-chart-pie"></i> <span data-i18n="riskInsights">Risk &amp; Insights</span></h3>
                 <div id="riskContainer">
-                    <div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save an encounter to see risk scoring.</div>
+                    <div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see risk scoring.</span></div>
                 </div>
                 <div class="composite-box">
-                    <span><i class="fas fa-shield-alt"></i> Composite Risk Index</span>
+                    <span><i class="fas fa-shield-alt"></i> <span data-i18n="compositeIndex">Composite Risk Index</span></span>
                     <span class="composite-score" id="compositeScore">—</span>
                 </div>
                 <div class="ai-insight" id="aiInsight">
-                    <i class="fas fa-robot"></i> AI insights will appear after saving.
+                    <i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>
                 </div>
-                <hr style="margin:16px 0; border-color:#e9edf2;" />
+                <hr style="margin:14px 0; border-color:#e9edf2;" />
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                    <span><i class="fas fa-qrcode"></i> Encounter QR</span>
-                    <button class="btn-sm" id="downloadQrBtn"><i class="fas fa-download"></i> Download</button>
+                    <span><i class="fas fa-qrcode"></i> <span data-i18n="encounterQR">Encounter QR</span></span>
+                    <button class="btn-sm" id="downloadQrBtn"><i class="fas fa-download"></i> <span data-i18n="download">Download</span></button>
                 </div>
                 <div class="qr-container">
                     <div id="qrcode"></div>
@@ -403,26 +584,26 @@
 
         <!-- ========== HISTORY ========== -->
         <div class="card history-section">
-            <h3><i class="fas fa-history"></i> Encounter History <span style="font-size:0.8rem; font-weight:400; color:#4a5b6e;" id="historyCount">0 records</span></h3>
+            <h3><i class="fas fa-history"></i> <span data-i18n="history">Encounter History</span> <span style="font-size:0.8rem; font-weight:400; color:#4a5b6e;" id="historyCount">0 records</span></h3>
             <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Profile</th>
+                            <th><span data-i18n="id">ID</span></th>
+                            <th><span data-i18n="date">Date</span></th>
+                            <th><span data-i18n="profile">Profile</span></th>
                             <th>BMI</th>
                             <th>LDL</th>
                             <th>HDL</th>
-                            <th>Glucose</th>
+                            <th><span data-i18n="glucose">Glucose</span></th>
                             <th>SBP</th>
                             <th>EF</th>
-                            <th>Risk</th>
-                            <th>Action</th>
+                            <th><span data-i18n="risk">Risk</span></th>
+                            <th><span data-i18n="action">Action</span></th>
                         </tr>
                     </thead>
                     <tbody id="historyBody">
-                        <tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No encounters yet.</td></tr>
+                        <tr><td colspan="11" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -430,24 +611,149 @@
 
     </div>
 
+    <!-- ========== FOOTER ========== -->
+    <footer class="app-footer">
+        <span class="footer-brand">MEDFIT BRAVO</span> · <span data-i18n="footerText">AI-powered preventive health tracking</span> ·
+        <a href="https://virtualcaresolution.de" target="_blank">virtualcaresolution.de</a>
+        <span style="margin:0 8px;">·</span>
+        <span data-i18n="footerIp">Your IP</span>: <span id="ipDisplay">—</span>
+    </footer>
+
     <script>
         // ============================================================
-        //  MEDFIT BRAVO – AI eHealth Application
-        //  Features: 3 profiles, OCR scanning, QR per encounter,
-        //  risk scoring, AI insights, local storage.
+        //  MEDFIT BRAVO – Full Application
+        //  i18n: EN/DE/ES/AR | Profiles: Women/Men/Geriatric
+        //  OCR, QR, risk scoring, AI insights, history
         // ============================================================
 
         (function() {
             'use strict';
 
-            // ---------- CONFIGURATION ----------
+            // ---------- I18N DICTIONARY ----------
+            const i18n = {
+                en: {
+                    step1: 'Scan or enter readings',
+                    step2: 'Save encounter',
+                    step3: 'View risk & AI insights',
+                    step4: 'Download QR or share',
+                    enterReadings: 'Enter Readings',
+                    scanDoc: 'Scan Document',
+                    clear: 'Clear',
+                    ready: 'Ready',
+                    saveEncounter: 'Save Encounter',
+                    reset: 'Reset',
+                    riskInsights: 'Risk & Insights',
+                    saveToSeeRisk: 'Save an encounter to see risk scoring.',
+                    compositeIndex: 'Composite Risk Index',
+                    aiPlaceholder: 'AI insights will appear after saving.',
+                    encounterQR: 'Encounter QR',
+                    download: 'Download',
+                    history: 'Encounter History',
+                    id: 'ID',
+                    date: 'Date',
+                    profile: 'Profile',
+                    glucose: 'Glucose',
+                    risk: 'Risk',
+                    action: 'Action',
+                    noEncounters: 'No encounters yet.',
+                    footerText: 'AI-powered preventive health tracking',
+                    footerIp: 'Your IP'
+                },
+                de: {
+                    step1: 'Scannen oder Werte eingeben',
+                    step2: 'Termin speichern',
+                    step3: 'Risiko & KI-Einblicke anzeigen',
+                    step4: 'QR herunterladen oder teilen',
+                    enterReadings: 'Werte eingeben',
+                    scanDoc: 'Dokument scannen',
+                    clear: 'Löschen',
+                    ready: 'Bereit',
+                    saveEncounter: 'Termin speichern',
+                    reset: 'Zurücksetzen',
+                    riskInsights: 'Risiko & Einblicke',
+                    saveToSeeRisk: 'Speichern Sie einen Termin, um das Risiko zu sehen.',
+                    compositeIndex: 'Gesamtrisiko-Index',
+                    aiPlaceholder: 'KI-Einblicke erscheinen nach dem Speichern.',
+                    encounterQR: 'Termin-QR',
+                    download: 'Herunterladen',
+                    history: 'Terminverlauf',
+                    id: 'ID',
+                    date: 'Datum',
+                    profile: 'Profil',
+                    glucose: 'Glukose',
+                    risk: 'Risiko',
+                    action: 'Aktion',
+                    noEncounters: 'Noch keine Termine.',
+                    footerText: 'KI-gestütztes präventives Gesundheits-Tracking',
+                    footerIp: 'Ihre IP'
+                },
+                es: {
+                    step1: 'Escanear o ingresar lecturas',
+                    step2: 'Guardar encuentro',
+                    step3: 'Ver riesgo y perspectivas IA',
+                    step4: 'Descargar QR o compartir',
+                    enterReadings: 'Ingresar lecturas',
+                    scanDoc: 'Escanear documento',
+                    clear: 'Limpiar',
+                    ready: 'Listo',
+                    saveEncounter: 'Guardar encuentro',
+                    reset: 'Reiniciar',
+                    riskInsights: 'Riesgo y perspectivas',
+                    saveToSeeRisk: 'Guarde un encuentro para ver el riesgo.',
+                    compositeIndex: 'Índice de riesgo compuesto',
+                    aiPlaceholder: 'Las perspectivas IA aparecerán después de guardar.',
+                    encounterQR: 'QR del encuentro',
+                    download: 'Descargar',
+                    history: 'Historial de encuentros',
+                    id: 'ID',
+                    date: 'Fecha',
+                    profile: 'Perfil',
+                    glucose: 'Glucosa',
+                    risk: 'Riesgo',
+                    action: 'Acción',
+                    noEncounters: 'Aún no hay encuentros.',
+                    footerText: 'Seguimiento preventivo de salud con IA',
+                    footerIp: 'Su IP'
+                },
+                ar: {
+                    step1: 'مسح أو إدخال القراءات',
+                    step2: 'حفظ الزيارة',
+                    step3: 'عرض المخاطر ورؤى الذكاء الاصطناعي',
+                    step4: 'تنزيل QR أو مشاركته',
+                    enterReadings: 'إدخال القراءات',
+                    scanDoc: 'مسح المستند',
+                    clear: 'مسح',
+                    ready: 'جاهز',
+                    saveEncounter: 'حفظ الزيارة',
+                    reset: 'إعادة تعيين',
+                    riskInsights: 'المخاطر والرؤى',
+                    saveToSeeRisk: 'احفظ زيارة لرؤية تقييم المخاطر.',
+                    compositeIndex: 'مؤشر المخاطر المركب',
+                    aiPlaceholder: 'ستظهر رؤى الذكاء الاصطناعي بعد الحفظ.',
+                    encounterQR: 'رمز QR للزيارة',
+                    download: 'تنزيل',
+                    history: 'سجل الزيارات',
+                    id: 'المعرف',
+                    date: 'التاريخ',
+                    profile: 'الملف الشخصي',
+                    glucose: 'الجلوكوز',
+                    risk: 'المخاطر',
+                    action: 'إجراء',
+                    noEncounters: 'لا توجد زيارات بعد.',
+                    footerText: 'تتبع صحي وقائي مدعوم بالذكاء الاصطناعي',
+                    footerIp: 'عنوان IP الخاص بك'
+                }
+            };
+
+            let currentLang = 'en';
+
+            // ---------- STORAGE ----------
             const STORAGE_KEY = 'medfitBRAVO_encounters';
             let encounters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let currentProfile = 'women'; // 'women', 'men', 'geriatric'
-            let currentEncounterId = null; // auto-generated
-            let chartInstance = null;
+            let currentProfile = 'women';
+            let currentEncounterId = null;
 
-            // Field definitions per profile
+            // ---------- FIELD DEFS ----------
             const FIELD_DEFS = {
                 women: [
                     { id: 'bmi', label: 'BMI', unit: 'kg/m²', step: '0.1' },
@@ -505,9 +811,9 @@
                 ]
             };
 
-            // Thresholds for risk (profile‑adjusted)
-            function getThresholds(profile) {
-                const common = {
+            // ---------- RISK THRESHOLDS ----------
+            function getThresholds() {
+                return {
                     bmi: [
                         { max: 18.4, level: 'moderate', label: 'Underweight', cls: 'risk-moderate' },
                         { max: 24.9, level: 'low', label: 'Normal', cls: 'risk-low' },
@@ -519,7 +825,6 @@
                         { max: 159, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
                     ],
-                    hdl: { low: 40, moderate: 60 },
                     glucose: [
                         { max: 99, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 125, level: 'moderate', label: 'Prediabetes', cls: 'risk-moderate' },
@@ -530,19 +835,17 @@
                         { max: 139, level: 'moderate', label: 'Elevated', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'High', cls: 'risk-high' }
                     ],
-                    ef: { low: 55, moderate: 45 },
                     imt: [
                         { max: 0.79, level: 'low', label: 'Normal', cls: 'risk-low' },
                         { max: 0.99, level: 'moderate', label: 'Borderline', cls: 'risk-moderate' },
                         { max: 999, level: 'high', label: 'Thickened', cls: 'risk-high' }
                     ]
                 };
-                return common;
             }
 
             // ---------- DOM REFS ----------
             const form = document.getElementById('checkupForm');
-            const formFieldsContainer = document.getElementById('formFields');
+            const formFields = document.getElementById('formFields');
             const scanBtn = document.getElementById('scanBtn');
             const scanInput = document.getElementById('scanInput');
             const scanStatus = document.getElementById('scanStatus');
@@ -556,24 +859,18 @@
             const historyCount = document.getElementById('historyCount');
             const encounterNumberSpan = document.getElementById('encounterNumber');
             const profileBtns = document.querySelectorAll('.profile-btn');
+            const langBtns = document.querySelectorAll('.lang-btn');
+            const ipDisplay = document.getElementById('ipDisplay');
 
-            // ---------- UTILITY FUNCTIONS ----------
-            function getFieldValue(id) {
-                const el = document.getElementById(id);
-                return el ? el.value : '';
-            }
+            // ---------- UTILITY ----------
+            function getFieldValue(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
-            function setFieldValue(id, val) {
-                const el = document.getElementById(id);
-                if (el) el.value = val;
-            }
+            function setFieldValue(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
 
             function getFormData() {
                 const data = {};
                 const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
-                fields.forEach(f => {
-                    data[f.id] = getFieldValue(f.id);
-                });
+                fields.forEach(f => data[f.id] = getFieldValue(f.id));
                 data.profile = currentProfile;
                 return data;
             }
@@ -581,9 +878,7 @@
             function setFormData(data) {
                 if (!data) return;
                 const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
-                fields.forEach(f => {
-                    if (data[f.id] !== undefined) setFieldValue(f.id, data[f.id]);
-                });
+                fields.forEach(f => { if (data[f.id] !== undefined) setFieldValue(f.id, data[f.id]); });
             }
 
             function clearFormValues() {
@@ -595,7 +890,6 @@
                 return 'ENC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
             }
 
-            // ---------- BUILD FORM DYNAMICALLY ----------
             function buildForm() {
                 const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
                 let html = '';
@@ -607,26 +901,22 @@
                         </div>
                     `;
                 });
-                formFieldsContainer.innerHTML = html;
+                formFields.innerHTML = html;
             }
 
             // ---------- RISK COMPUTATION ----------
             function computeRisk(data) {
                 const n = (v) => parseFloat(v) || 0;
-                const thresholds = getThresholds(currentProfile);
+                const thresholds = getThresholds();
                 const risks = {};
 
                 if (n(data.bmi) > 0) {
                     const val = n(data.bmi);
-                    for (let t of thresholds.bmi) {
-                        if (val <= t.max) { risks.bmi = t; break; }
-                    }
+                    for (let t of thresholds.bmi) { if (val <= t.max) { risks.bmi = t; break; } }
                 }
                 if (n(data.ldl) > 0) {
                     const val = n(data.ldl);
-                    for (let t of thresholds.ldl) {
-                        if (val <= t.max) { risks.ldl = t; break; }
-                    }
+                    for (let t of thresholds.ldl) { if (val <= t.max) { risks.ldl = t; break; } }
                 }
                 if (n(data.hdl) > 0) {
                     const val = n(data.hdl);
@@ -636,15 +926,11 @@
                 }
                 if (n(data.glucose) > 0) {
                     const val = n(data.glucose);
-                    for (let t of thresholds.glucose) {
-                        if (val <= t.max) { risks.glucose = t; break; }
-                    }
+                    for (let t of thresholds.glucose) { if (val <= t.max) { risks.glucose = t; break; } }
                 }
                 if (n(data.sbp) > 0) {
                     const val = n(data.sbp);
-                    for (let t of thresholds.sbp) {
-                        if (val <= t.max) { risks.sbp = t; break; }
-                    }
+                    for (let t of thresholds.sbp) { if (val <= t.max) { risks.sbp = t; break; } }
                 }
                 if (n(data.ef) > 0) {
                     const val = n(data.ef);
@@ -654,9 +940,7 @@
                 }
                 if (n(data.imt) > 0) {
                     const val = n(data.imt);
-                    for (let t of thresholds.imt) {
-                        if (val <= t.max) { risks.imt = t; break; }
-                    }
+                    for (let t of thresholds.imt) { if (val <= t.max) { risks.imt = t; break; } }
                 }
 
                 let total = 0,
@@ -673,34 +957,23 @@
                 return { risks, composite };
             }
 
-            // ---------- RENDER RISK & AI ----------
+            // ---------- RENDER ----------
             function renderRisk(data) {
                 if (!data || Object.keys(data).length === 0) {
                     riskContainer.innerHTML =
-                    `<div style="color:#6f7d8f; padding:20px 0; text-align:center;">Save an encounter to see risk scoring.</div>`;
+                        `<div style="color:#6f7d8f; padding:16px 0; text-align:center;"><span data-i18n="saveToSeeRisk">Save an encounter to see risk scoring.</span></div>`;
                     compositeScore.textContent = '—';
-                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                     return;
                 }
 
                 const { risks, composite } = computeRisk(data);
                 let html = '<div class="risk-summary">';
-                const labelMap = {
-                    bmi: 'BMI',
-                    ldl: 'LDL',
-                    hdl: 'HDL',
-                    glucose: 'Glucose',
-                    sbp: 'SBP',
-                    ef: 'Ejection Fraction',
-                    imt: 'Carotid IMT'
-                };
+                const labelMap = { bmi: 'BMI', ldl: 'LDL', hdl: 'HDL', glucose: 'Glucose', sbp: 'SBP', ef: 'EF', imt: 'IMT' };
                 for (let key in risks) {
                     const r = risks[key];
                     const display = labelMap[key] || key.toUpperCase();
-                    html += `<div class="risk-item">
-                                <span>${display}</span>
-                                <span class="risk-badge ${r.cls}">${r.label}</span>
-                             </div>`;
+                    html += `<div class="risk-item"><span>${display}</span><span class="risk-badge ${r.cls}">${r.label}</span></div>`;
                 }
                 html += '</div>';
                 riskContainer.innerHTML = html;
@@ -708,12 +981,12 @@
 
                 let insight = '';
                 const n = (v) => parseFloat(v) || 0;
-                const bmi = n(data.bmi);
-                const ldl = n(data.ldl);
-                const hdl = n(data.hdl);
-                const glu = n(data.glucose);
-                const sbp = n(data.sbp);
-                const ef = n(data.ef);
+                const bmi = n(data.bmi),
+                    ldl = n(data.ldl),
+                    hdl = n(data.hdl),
+                    glu = n(data.glucose),
+                    sbp = n(data.sbp),
+                    ef = n(data.ef);
 
                 if (bmi > 30) insight += '⚠️ BMI indicates obesity – consider lifestyle modifications. ';
                 else if (bmi > 25) insight += '⚖️ Overweight – regular exercise and balanced diet recommended. ';
@@ -724,34 +997,24 @@
                 else if (glu > 100) insight += '🍭 Prediabetic range – reduce sugar intake. ';
                 if (sbp > 140) insight += '❤️ High blood pressure – regular monitoring and low‑salt diet. ';
                 if (ef < 55) insight += '💓 Reduced ejection fraction – cardiology follow‑up advised. ';
-
                 if (insight === '') insight = '✅ All markers are within low‑risk ranges. Keep up the healthy habits!';
 
-                if (currentProfile === 'women') {
-                    insight += ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
-                } else if (currentProfile === 'geriatric') {
-                    insight += ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
-                }
+                if (currentProfile === 'women') insight += ' For women, hormonal factors can influence cardiovascular risk – discuss with your gynaecologist.';
+                else if (currentProfile === 'geriatric') insight += ' For older adults, fall prevention and cognitive screening are also important – consider a comprehensive geriatric assessment.';
 
                 aiInsight.innerHTML = `<i class="fas fa-robot"></i> ${insight}`;
             }
 
-            // ---------- QR CODE GENERATION ----------
+            // ---------- QR ----------
             function generateQR(data, id) {
                 qrContainer.innerHTML = '';
                 const payload = {
-                    id: id,
+                    id,
                     date: new Date().toISOString().split('T')[0],
                     profile: currentProfile,
                     composite: computeRisk(data).composite,
-                    keyValues: {
-                        bmi: data.bmi,
-                        ldl: data.ldl,
-                        hdl: data.hdl,
-                        glucose: data.glucose,
-                        sbp: data.sbp,
-                        ef: data.ef
-                    }
+                    keyValues: { bmi: data.bmi, ldl: data.ldl, hdl: data.hdl, glucose: data.glucose, sbp: data.sbp,
+                        ef: data.ef }
                 };
                 const jsonStr = JSON.stringify(payload);
                 new QRCode(qrContainer, {
@@ -767,60 +1030,51 @@
 
             function downloadQR() {
                 const canvas = qrContainer.querySelector('canvas');
-                if (!canvas) return alert('No QR code to download.');
+                if (!canvas) return alert('No QR code.');
                 const link = document.createElement('a');
                 link.download = `QR_${currentEncounterId || 'encounter'}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }
 
-            // ---------- SAVE ENCOUNTER ----------
+            // ---------- SAVE ----------
             function saveEncounter(e) {
                 e.preventDefault();
                 const data = getFormData();
                 const hasValue = Object.values(data).some(v => v && v.trim() !== '');
-                if (!hasValue) {
-                    alert('Please enter at least one reading.');
-                    return;
-                }
+                if (!hasValue) { alert('Please enter at least one reading.'); return; }
 
                 const id = generateEncounterId();
-                const encounter = {
-                    id: id,
-                    date: new Date().toISOString().split('T')[0],
-                    profile: currentProfile,
-                    ...data
-                };
+                const encounter = { id, date: new Date().toISOString().split('T')[0], profile: currentProfile, ...data };
                 encounters.push(encounter);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(encounters));
 
                 currentEncounterId = id;
                 encounterNumberSpan.textContent = id.slice(-4);
-
                 renderRisk(data);
                 generateQR(data, id);
                 renderHistory();
             }
 
-            // ---------- RENDER HISTORY ----------
+            // ---------- HISTORY ----------
             function renderHistory() {
                 if (encounters.length === 0) {
                     historyBody.innerHTML =
-                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;">No encounters yet.</td></tr>`;
+                        `<tr><td colspan="11" style="text-align:center; color:#6f7d8f;"><span data-i18n="noEncounters">No encounters yet.</span></td></tr>`;
                     historyCount.textContent = '0 records';
                     return;
                 }
 
                 const sorted = [...encounters].sort((a, b) => new Date(b.date) - new Date(a.date));
                 let html = '';
-                sorted.forEach((enc, idx) => {
+                sorted.forEach(enc => {
                     const { composite } = computeRisk(enc);
-                    const bmi = parseFloat(enc.bmi) || 0;
-                    const ldl = parseFloat(enc.ldl) || 0;
-                    const hdl = parseFloat(enc.hdl) || 0;
-                    const glu = parseFloat(enc.glucose) || 0;
-                    const sbp = parseFloat(enc.sbp) || 0;
-                    const ef = parseFloat(enc.ef) || 0;
+                    const bmi = parseFloat(enc.bmi) || 0,
+                        ldl = parseFloat(enc.ldl) || 0,
+                        hdl = parseFloat(enc.hdl) || 0;
+                    const glu = parseFloat(enc.glucose) || 0,
+                        sbp = parseFloat(enc.sbp) || 0,
+                        ef = parseFloat(enc.ef) || 0;
 
                     html += `
                         <tr>
@@ -849,9 +1103,7 @@
                         const data = JSON.parse(this.dataset.load);
                         setFormData(data);
                         currentProfile = data.profile || 'women';
-                        profileBtns.forEach(b => {
-                            b.classList.toggle('active', b.dataset.profile === currentProfile);
-                        });
+                        profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
                         buildForm();
                         setFormData(data);
                         renderRisk(data);
@@ -879,23 +1131,22 @@
                 });
             }
 
-            // ---------- OCR SCANNING ----------
+            // ---------- OCR ----------
             async function performOCR(file) {
-                scanStatus.textContent = 'Scanning...';
-                scanStatus.style.color = '#005792';
+                scanStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Scanning...`;
                 try {
                     const result = await Tesseract.recognize(file, 'eng', {
-                        logger: m => { if (m.status === 'recognizing text') scanStatus.textContent = `Scanning ${Math.round(m.progress*100)}%`; }
+                        logger: m => { if (m.status === 'recognizing text') scanStatus.textContent =
+                                `Scanning ${Math.round(m.progress*100)}%`; }
                     });
                     const text = result.data.text;
-                    scanStatus.textContent = 'Scan complete. Parsing numbers...';
                     const numbers = text.match(/\b(\d{2,3}(?:\.\d)?)\s*(?:mg\/dL|mmol\/L|cm|kg|mmHg|%)?/g);
                     if (numbers) {
                         const vals = numbers.map(s => parseFloat(s.replace(/[^\d.]/g, ''))).filter(v => !isNaN(v) && v > 0);
                         const fields = FIELD_DEFS[currentProfile] || FIELD_DEFS.women;
                         let idx = 0;
-                        const order = ['bmi', 'ldl', 'hdl', 'glucose', 'sbp', 'dbp', 'hr', 'ef', 'imt', 'chol', 'trig', 'hba1c',
-                            'waist', 'bf', 'fev1', 'fvc'
+                        const order = ['bmi', 'ldl', 'hdl', 'glucose', 'sbp', 'dbp', 'hr', 'ef', 'imt', 'chol', 'trig',
+                            'hba1c', 'waist', 'bf', 'fev1', 'fvc'
                         ];
                         for (let key of order) {
                             if (fields.find(f => f.id === key) && idx < vals.length) {
@@ -903,12 +1154,12 @@
                                 idx++;
                             }
                         }
-                        scanStatus.textContent = `✅ Extracted ${idx} values.`;
+                        scanStatus.innerHTML = `<i class="fas fa-check-circle" style="color:#28a745;"></i> Extracted ${idx} values.`;
                     } else {
-                        scanStatus.textContent = '⚠️ No numeric values found. Try a clearer image.';
+                        scanStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#ffc107;"></i> No numeric values found.`;
                     }
                 } catch (err) {
-                    scanStatus.textContent = '❌ OCR failed.';
+                    scanStatus.innerHTML = `<i class="fas fa-times-circle" style="color:#dc3545;"></i> OCR failed.`;
                     console.error(err);
                 }
             }
@@ -916,18 +1167,37 @@
             // ---------- PROFILE SWITCH ----------
             function switchProfile(profile) {
                 currentProfile = profile;
-                profileBtns.forEach(b => {
-                    b.classList.toggle('active', b.dataset.profile === profile);
-                });
+                profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === profile));
                 buildForm();
                 clearFormValues();
                 renderRisk(null);
                 compositeScore.textContent = '—';
-                aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                aiInsight.innerHTML = `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                 qrContainer.innerHTML = '';
                 currentEncounterId = null;
                 encounterNumberSpan.textContent = '0000';
                 renderHistory();
+            }
+
+            // ---------- I18N ----------
+            function applyLanguage(lang) {
+                currentLang = lang;
+                langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+                const dict = i18n[lang] || i18n.en;
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (dict[key] !== undefined) el.textContent = dict[key];
+                });
+                // Update dynamic text nodes (placeholders in risk/ai will be re-rendered on next save)
+            }
+
+            // ---------- IP FETCH ----------
+            async function fetchIP() {
+                try {
+                    const res = await fetch('https://api.ipify.org?format=json');
+                    const data = await res.json();
+                    ipDisplay.textContent = data.ip || '—';
+                } catch { ipDisplay.textContent = '—'; }
             }
 
             // ---------- INIT ----------
@@ -937,9 +1207,7 @@
                     const latest = encounters[encounters.length - 1];
                     setFormData(latest);
                     currentProfile = latest.profile || 'women';
-                    profileBtns.forEach(b => {
-                        b.classList.toggle('active', b.dataset.profile === currentProfile);
-                    });
+                    profileBtns.forEach(b => b.classList.toggle('active', b.dataset.profile === currentProfile));
                     buildForm();
                     setFormData(latest);
                     renderRisk(latest);
@@ -951,27 +1219,25 @@
                     renderRisk(null);
                 }
                 renderHistory();
+                fetchIP();
 
+                // Events
                 form.addEventListener('submit', saveEncounter);
 
                 clearBtn.addEventListener('click', function() {
                     clearFormValues();
                     renderRisk(null);
                     compositeScore.textContent = '—';
-                    aiInsight.innerHTML = `<i class="fas fa-robot"></i> AI insights will appear after saving.`;
+                    aiInsight.innerHTML =
+                    `<i class="fas fa-robot"></i> <span data-i18n="aiPlaceholder">AI insights will appear after saving.</span>`;
                     qrContainer.innerHTML = '';
                     currentEncounterId = null;
                     encounterNumberSpan.textContent = '0000';
                 });
 
-                scanBtn.addEventListener('click', function() {
-                    scanInput.click();
-                });
-
-                scanInput.addEventListener('change', function(e) {
-                    if (this.files && this.files.length > 0) {
-                        performOCR(this.files[0]);
-                    }
+                scanBtn.addEventListener('click', () => scanInput.click());
+                scanInput.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) performOCR(this.files[0]);
                     this.value = '';
                 });
 
@@ -980,10 +1246,19 @@
                 profileBtns.forEach(btn => {
                     btn.addEventListener('click', function() {
                         const profile = this.dataset.profile;
-                        if (profile === currentProfile) return;
-                        switchProfile(profile);
+                        if (profile !== currentProfile) switchProfile(profile);
                     });
                 });
+
+                langBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const lang = this.dataset.lang;
+                        if (lang !== currentLang) applyLanguage(lang);
+                    });
+                });
+
+                // initial language
+                applyLanguage('en');
             }
 
             init();
@@ -993,48 +1268,3 @@
 
 </body>
 </html>
-```
-
---
-
-
-🔍 Document Scanning (OCR)
-
-· Click “Scan Document” and upload a photo of your lab report or health record.
-· The app uses Tesseract.js to extract numbers and auto‑fills the matching fields (BMI, LDL, glucose, etc.) – no manual typing needed.
-
-👤 Three Health Profiles
-
-· Women’s – tailored risk interpretation and insights.
-· Men’s – same core metrics but with gender‑aware suggestions.
-· Geriatric – adds age‑specific advice (falls, cognition, polypharmacy).
-· Switch profiles anytime – the form updates and risk thresholds adjust automatically.
-
- AI‑Style Insights
-
-· After saving, the app provides rule‑based, personalised recommendations (e.g., “High LDL – reduce saturated fats”).
-· Insights are profile‑aware – women get hormonal context, geriatric users get fall/cognition tips.
-
-Risk Index (Composite Score)
-
-· The Composite Risk Index (0–100) is a weighted average of individual risk levels:
-  · Low (0–33) → all markers in healthy ranges.
-  · Moderate (34–66) → some markers borderline – lifestyle changes advised.
-  · High (67–100) → multiple elevated risks – medical follow‑up recommended.
-· Each variable (BMI, LDL, SBP, etc.) gets its own risk badge (Low/Moderate/High) for quick scanning.
-
- How to Use
-
-1. Select your profile (Women / Men / Geriatric).
-2. Enter readings manually, or scan a document to auto‑fill.
-3. Click “Save Encounter” – the risk dashboard, AI insights, and QR code appear instantly.
-4. The QR code can be downloaded as PNG for sharing or printing.
-5. All encounters are listed below – click 👁️ to load a past visit, or 🗑️ 
-
- Technical Notes
-
-· All data is stored in localStorage – no server, your data stays private.
-· The app is a single HTML file – just open it in any modern browser.
-· No internet required after the first load (CDN resources are cached).
-· Works offline.
-
